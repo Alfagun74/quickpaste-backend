@@ -25,7 +25,7 @@ server.on('connection', (socket: Socket) => {
   log.info(`Client ${socketId} connected from ${socket.remoteAddress}:${socket.remotePort}`);
 
   socket.on('data', (data: Buffer) => {
-    log.info(`Data (${prettyBytes(data.byteLength, {locale: 'de'})}) received from client: ${data.toString("utf-8")}`);
+    log.info(`Data (${prettyBytes(data.buffer.byteLength ?? 0, {locale: 'de'})}) received from client: ${data.toString("utf-8")}`);
     if (sockets.size <= 1) {
       log.info(`Client ${socketId} is alone.`);
       return;
@@ -33,7 +33,7 @@ server.on('connection', (socket: Socket) => {
     sockets.forEach((socket: Socket, id: string) => {
       if (id != socketId) {
         socket.write(data);
-        log.info(`Data (${prettyBytes(data.byteLength, {locale: 'de'})}) sent from client ${socketId} to client ${id}: ${data.toString("utf-8")}`);
+        log.info(`Data (${prettyBytes(data.buffer.byteLength ?? 0, {locale: 'de'})}) sent from client ${socketId} to client ${id}: ${data.toString("utf-8")}`);
       }
     });
   });
