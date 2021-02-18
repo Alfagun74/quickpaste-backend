@@ -25,7 +25,9 @@ server.on('connection', (socket: Socket) => {
   log.info(`Client ${socketId} connected from ${socket.remoteAddress}:${socket.remotePort}`);
 
   socket.on('data', (data: Buffer) => {
-    log.info(`Data (${prettyBytes(data.buffer?.byteLength ?? 0, {locale: 'de'})}) received from client: ${data.toString("utf-8")}`);
+    const dataLength = prettyBytes(data.length ?? 0, { locale: 'de' })
+    log.info(`Data (${dataLength})
+  }) received from client: ${data.toString("utf-8")} `);
     if (sockets.size <= 1) {
       log.info(`Client ${socketId} is alone.`);
       return;
@@ -33,17 +35,17 @@ server.on('connection', (socket: Socket) => {
     sockets.forEach((socket: Socket, id: string) => {
       if (id != socketId) {
         socket.write(data);
-        log.info(`Data (${prettyBytes(data.buffer?.byteLength ?? 0, {locale: 'de'})}) sent from client ${socketId} to client ${id}: ${data.toString("utf-8")}`);
+        log.info(`Data(${dataLength}) sent from client ${socketId} to client ${id}: ${data.toString("utf-8")} `);
       }
     });
   });
 
   socket.on('end', function () {
-    log.info(`Closing connection with client ${socketId}`);
+    log.info(`Closing connection with client ${socketId} `);
     sockets.delete(socketId);
   });
 
   socket.on('error', (error: Error) => {
-    log.error(`ERROR on client: ${socketId}, ${socket.remoteAddress}:${socket.remotePort}`, error.message);
+    log.error(`ERROR on client: ${socketId}, ${socket.remoteAddress}: ${socket.remotePort} `, error.message);
   });
 });
