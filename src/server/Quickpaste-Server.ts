@@ -32,12 +32,13 @@ server.on('connection', (socket: Socket) => {
     sockets.forEach((socket: Socket, id: string) => {
       if (id != socketId) {
         socket.write(data);
+        log.info(`Data sent from client ${socketId} to client ${id}: ${data.toString("utf-8")}`);
       }
     });
   });
 
   socket.on('end', function () {
-    log.info(`Closing connection with Client ${socketId}`);
+    log.info(`Closing connection with client ${socketId}`);
     sockets.delete(socketId);
   });
 
