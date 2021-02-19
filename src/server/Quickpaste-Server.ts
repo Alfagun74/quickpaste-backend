@@ -26,8 +26,7 @@ server.on('connection', (socket: Socket) => {
 
   socket.on('data', (data: Buffer) => {
     const dataLength = prettyBytes(data.length ?? 0, { locale: 'de' })
-    log.info(`Data (${dataLength})
-  }) received from client: ${data.toString("utf-8")} `);
+    log.info(`Datapacket (${dataLength}) received from client.`);
     if (sockets.size <= 1) {
       log.info(`Client ${socketId} is alone.`);
       return;
@@ -35,7 +34,7 @@ server.on('connection', (socket: Socket) => {
     sockets.forEach((socket: Socket, id: string) => {
       if (id != socketId) {
         socket.write(data);
-        log.info(`Data(${dataLength}) sent from client ${socketId} to client ${id}: ${data.toString("utf-8")} `);
+        log.info(`Datapacket(${dataLength}) sent from client ${socketId} to client ${id}.`);
       }
     });
   });
