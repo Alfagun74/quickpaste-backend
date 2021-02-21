@@ -30,8 +30,8 @@ function onNewWebsocketConnection(socket: Socket) {
   sockets.set(socket.id, socket);
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
 
-  socket.on('data', (data: any) => {
-    log.info(`Datapacket received from client ${socket.id}`, data);
+  socket.on("data", (data) => {
+    log.info(`Data received from client ${socket.id}`, data);
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
       return;
@@ -39,7 +39,7 @@ function onNewWebsocketConnection(socket: Socket) {
     sockets.forEach((socket: Socket, id: string) => {
       if (id != socket.id) {
         socket.emit("data", data);
-        log.info(`Datapacket sent from client ${socket.id} to client ${id}.`);
+        log.info(`Data sent from client ${socket.id} to client ${id}.`);
       }
     });
   });
