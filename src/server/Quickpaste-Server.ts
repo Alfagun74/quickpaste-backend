@@ -9,7 +9,7 @@ import { start } from "repl";
 const log = new Logger();
 const port = 80;
 const sockets: Map<string, Socket> = new Map();
-let app: Express;
+let app;
 let server: http.Server;
 let io: Server;
 
