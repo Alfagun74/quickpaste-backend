@@ -9,11 +9,14 @@ import { start } from "repl";
 const log = new Logger();
 const port = 80;
 const sockets: Map<string, Socket> = new Map();
+let app: Express;
+let server: http.Server;
+let io: Server;
 
 function startServer() {
-  const app = express();
-  const server = http.createServer(app);
-  const io = new Server(server);
+  app = express();
+  server = http.createServer(app);
+  io = new Server(server);
   // example on how to serve a simple API
   //app.get("/random", (req, res) => res.send(generateRandomNumber()));
   // example on how to serve static files from a given folder
@@ -32,19 +35,16 @@ function onNewWebsocketConnection(socket: Socket) {
 
   socket.on("data", (data) => {
     log.info(`Data received from client ${socket.id}`, data);
+
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
-      return;
     }
-    sockets.forEach((socket: Socket, id: string) => {
-      if (id != socket.id) {
-        socket.emit("data", data);
-        log.info(`Data sent from client ${socket.id} to client ${id}.`);
-      }
-    });
+
+    io.emit("data", data);
+    log.info(`Data broadcasted from client ${socket.id}`);
   });
 
-  socket.on('end', function () {
+  socket.on('disconnect', function () {
     log.info(`Closing connection with client ${socket.id}`);
     sockets.delete(socket.id);
   });
