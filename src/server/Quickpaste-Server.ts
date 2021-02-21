@@ -45,6 +45,11 @@ function onNewWebsocketConnection(socket: Socket) {
     log.info(`Data broadcasted from client ${socket.id}`);
   });
 
+  socket.on('disconnect', function () {
+    log.info(`Closing connection with client ${socket.id}`);
+    sockets.delete(socket.id);
+  });
+
   socket.on('error', (error: Error) => {
     log.error(`ERROR on client: ${socket.id}, ${socket.handshake.address} `, error.message);
   });
