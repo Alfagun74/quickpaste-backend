@@ -1,10 +1,7 @@
 import { Logger } from "tslog";
-import { nanoid } from "nanoid";
-import prettyBytes from "pretty-bytes";
 import express from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
-import { start } from "repl";
 
 const log = new Logger();
 const port = 80;
@@ -16,7 +13,11 @@ let io: Server;
 function startServer() {
   app = express();
   server = http.createServer(app);
-  io = new Server(server);
+  io = new Server(server, {
+    pingTimeout: 60000,
+    pingInterval: 60000,
+    maxHttpBufferSize: 1e600
+  });
   // example on how to serve a simple API
   //app.get("/random", (req, res) => res.send(generateRandomNumber()));
   // example on how to serve static files from a given folder
@@ -34,7 +35,7 @@ function onNewWebsocketConnection(socket: Socket) {
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
 
   socket.on("data", (data) => {
-    log.info(`Data received from client ${socket.id}`, data);
+    log.info(`Data received from client ${socket.id}`, data.comment);
 
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
@@ -42,11 +43,6 @@ function onNewWebsocketConnection(socket: Socket) {
 
     io.emit("data", data);
     log.info(`Data broadcasted from client ${socket.id}`);
-  });
-
-  socket.on('disconnect', function () {
-    log.info(`Closing connection with client ${socket.id}`);
-    sockets.delete(socket.id);
   });
 
   socket.on('error', (error: Error) => {
