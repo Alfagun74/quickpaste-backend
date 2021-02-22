@@ -1,6 +1,6 @@
 {
   "name": "quickpaste-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Backend Server for Quickpaste App",
   "private": true,
   "scripts": {
@@ -8,11 +8,6 @@
     "deploy": "npm --no-git-tag-version version patch",
     "build": "tsc",
     "serve": "node ./bin/server/Quickpaste-Server.js"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run deploy && git add ."
-    }
   },
   "authors": [
     "Alfagun74"
