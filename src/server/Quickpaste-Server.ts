@@ -28,6 +28,9 @@ function startServer() {
   server.on('error', (error: Error) => {
     log.error(`ERROR on server`, error.message);
   });
+  setInterval(() => {
+    io.emit("onlinecount", sockets.size);
+  }, interval)
 }
 
 function onNewWebsocketConnection(socket: Socket) {
@@ -58,7 +61,4 @@ function onNewWebsocketConnection(socket: Socket) {
 }
 
 startServer();
-// Regular Data
-setInterval(() => {
-  io.emit("onlinecount", sockets.size);
-}, interval)
+
