@@ -7,7 +7,6 @@ import { Quickpaste } from "../models/Quickpaste";
 const log = new Logger();
 const port = 80;
 const sockets: Map<string, Socket> = new Map();
-const interval = 15000;
 let app;
 let server: http.Server;
 let io: Server;
@@ -28,13 +27,11 @@ function startServer() {
   server.on('error', (error: Error) => {
     log.error(`ERROR on server`, error.message);
   });
-  setInterval(() => {
-    io.emit("onlinecount", sockets.size);
-  }, interval)
 }
 
 function onNewWebsocketConnection(socket: Socket) {
   sockets.set(socket.id, socket);
+  io.emit("onlinecount", sockets.size);
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
 
   socket.on("data", (quickpaste: Quickpaste) => {
@@ -51,6 +48,7 @@ function onNewWebsocketConnection(socket: Socket) {
   socket.on('disconnect', function () {
     log.info(`Closing connection with client ${socket.id}`);
     sockets.delete(socket.id);
+    io.emit("onlinecount", sockets.size);
   });
 
   socket.on('error', (error: Error) => {

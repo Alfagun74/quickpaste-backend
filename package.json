@@ -7,7 +7,7 @@
     "start": "npm run build && npm run serve",
     "deploy": "npm --no-git-tag-version version patch",
     "build": "tsc",
-    "serve": "node ./bin/Quickpaste-Server.js"
+    "serve": "node ./bin/server/Quickpaste-Server.js"
   },
   "husky": {
     "hooks": {
