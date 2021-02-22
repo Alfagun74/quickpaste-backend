@@ -31,8 +31,8 @@ function startServer() {
 
 function onNewWebsocketConnection(socket: Socket) {
   sockets.set(socket.id, socket);
-  io.emit("onlinecount", sockets.size);
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
+  io.emit("onlinecount", sockets.size);
 
   socket.on("data", (quickpaste: Quickpaste) => {
     log.info(`Data received from client ${socket.id}:${quickpaste.username}`, quickpaste.comment);
