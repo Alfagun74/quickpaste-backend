@@ -36,8 +36,6 @@ function onNewWebsocketConnection(socket: Socket) {
 
   socket.on("data", (quickpaste: Quickpaste) => {
     log.info(`Data received from client ${socket.id}:${quickpaste.username}`, quickpaste.comment);
-    quickpaste.timestamp = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
     }
