@@ -2,10 +2,12 @@ import { Logger } from "tslog";
 import express from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
+import { Quickpaste } from "../models/Quickpaste";
 
 const log = new Logger();
 const port = 80;
 const sockets: Map<string, Socket> = new Map();
+const interval = 15000;
 let app;
 let server: http.Server;
 let io: Server;
@@ -32,14 +34,14 @@ function onNewWebsocketConnection(socket: Socket) {
   sockets.set(socket.id, socket);
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
 
-  socket.on("data", (data) => {
-    log.info(`Data received from client ${socket.id}`, data.comment);
+  socket.on("data", (quickpaste: Quickpaste) => {
+    log.info(`Data received from client ${socket.id}:${quickpaste.username}`, quickpaste.comment);
 
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
     }
 
-    io.emit("data", data);
+    io.emit("data", quickpaste);
     log.info(`Data broadcasted from client ${socket.id}`);
   });
 
@@ -51,6 +53,12 @@ function onNewWebsocketConnection(socket: Socket) {
   socket.on('error', (error: Error) => {
     log.error(`ERROR on client: ${socket.id}, ${socket.handshake.address} `, error.message);
   });
+
+
 }
 
 startServer();
+// Regular Data
+setInterval(() => {
+  io.emit("onlinecount", sockets.size);
+}, interval)
