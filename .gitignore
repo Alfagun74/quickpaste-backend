@@ -69,5 +69,5 @@ typings/
 
 uploads/*
 !uploads/.gitkeep
-uploads/full/*
-!uploads/full/.gitkeep
+uploads-full/*
+!uploads-full/.gitkeep
