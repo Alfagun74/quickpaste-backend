@@ -27,7 +27,7 @@ function startServer() {
   app = express();
   server = http.createServer(app);
   io = new Server(server, {
-    pingTimeout: 300000,
+    pingTimeout: 15*60*10000,
     maxHttpBufferSize: 1e600
   });
   // example on how to serve a simple API

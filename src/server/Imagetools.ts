@@ -1,8 +1,6 @@
 import { Logger } from "tslog";
 
 import fs from "fs";
-import path from "path"
-
 import mime from "mime";
 import imagemin from "imagemin";
 import imageminPngquant from "imagemin-pngquant";
@@ -41,7 +39,7 @@ export class ImageTools {
         return (await imagemin([inputFilePath], {
             destination: outputFolderPath,
             plugins: [
-                imageminPngquant({ quality: [0.5, 0.5] }),
+                imageminPngquant(),
             ],
             glob: false
         }))[0].destinationPath;
