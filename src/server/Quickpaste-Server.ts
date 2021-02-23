@@ -3,9 +3,12 @@ import express from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
 import { Quickpaste } from "../models/Quickpaste";
-import imageCompression from 'browser-image-compression';
 import LZString from "lz-string";
+import { ImageTools } from "./Imagetools";
 
+global.atob = require("atob");
+global.Blob = require("node-blob");
+global.FileReader = require("filereader");
 
 const options = {
   maxSizeMB: 8,
@@ -28,7 +31,6 @@ function startServer() {
   //app.get("/random", (req, res) => res.send(generateRandomNumber()));
   // example on how to serve static files from a given folder
   //app.use(express.static("public"));
-
   io.on("connection", onNewWebsocketConnection);
   server.listen(port, () => console.info(`Server listening for connection requests on socket localhost: ${port}`));
   server.on('error', (error: Error) => {
@@ -71,21 +73,20 @@ async function processData(quickpaste: Quickpaste): Promise<Quickpaste> {
   // Compress Image
   const HQImageDataUrlCompressed = quickpaste.img
   const HQImageDataUrlUncompressed = LZString.decompressFromUTF16(HQImageDataUrlCompressed) ?? "";
-  const HQImageFile = await imageCompression.getFilefromDataUrl(
+  const HQImageFile = await ImageTools.getFilefromDataUrl(
     HQImageDataUrlUncompressed,
     `${quickpaste.timestamp}.png`
   );
-  const LQImageFileUncompressed = await imageCompression(HQImageFile, options);
-  const LQImageDataUrlUncompressed = await imageCompression.getDataUrlFromFile(LQImageFileUncompressed);
+  //TODO: COMPRESSconst LQImageFileUncompressed = await imageCompression(HQImageFile, options);
+  const LQImageDataUrlUncompressed = await ImageTools.getDataUrlFromFile(HQImageFile);
   const LQImageDataUrlCompressed = LZString.compressToUTF16(LQImageDataUrlUncompressed)
   quickpaste.img = LQImageDataUrlCompressed;
 
   // Calculate File-Size
-  quickpaste.size = `${(LQImageFileUncompressed.size / 1024 / 1024).toFixed(
+  quickpaste.size = `${(HQImageFile.size / 1024 / 1024).toFixed(
     1
   )} MB`;
   return quickpaste;
 }
 
 startServer();
-
