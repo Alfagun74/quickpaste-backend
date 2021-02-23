@@ -5,10 +5,12 @@ import { Server, Socket } from "socket.io";
 import { Quickpaste } from "../models/Quickpaste";
 import LZString from "lz-string";
 import { ImageTools } from "./Imagetools";
+import { customAlphabet } from "nanoid";
+import path from "path"
+import fs from "fs"
+import date from 'date-and-time';
 
-global.atob = require("atob");
-global.Blob = require("node-blob");
-global.FileReader = require("filereader");
+const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 4);
 
 const options = {
   maxSizeMB: 8,
@@ -32,7 +34,7 @@ function startServer() {
   // example on how to serve static files from a given folder
   //app.use(express.static("public"));
   io.on("connection", onNewWebsocketConnection);
-  server.listen(port, () => console.info(`Server listening for connection requests on socket localhost: ${port}`));
+  server.listen(port, () => log.info(`Server listening for connection requests on socket localhost: ${port}`));
   server.on('error', (error: Error) => {
     log.error(`ERROR on server`, error.message);
   });
@@ -67,25 +69,29 @@ function onNewWebsocketConnection(socket: Socket) {
 }
 
 async function processData(quickpaste: Quickpaste): Promise<Quickpaste> {
+  const filename = `${date.format(new Date(), "YYYY-MM-DD-HH-mm-ss")}_ID-${nanoid()}`;
+  log.info("Processsing Image:");
   // Set Timestamp
   quickpaste.timestamp = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-
   // Compress Image
-  const HQImageDataUrlCompressed = quickpaste.img
+  log.info("=> Decompressing DataUrl...");
+  const HQImageDataUrlCompressed = quickpaste.img;
   const HQImageDataUrlUncompressed = LZString.decompressFromUTF16(HQImageDataUrlCompressed) ?? "";
-  const HQImageFile = await ImageTools.getFilefromDataUrl(
-    HQImageDataUrlUncompressed,
-    `${quickpaste.timestamp}.png`
-  );
-  //TODO: COMPRESSconst LQImageFileUncompressed = await imageCompression(HQImageFile, options);
-  const LQImageDataUrlUncompressed = await ImageTools.getDataUrlFromFile(HQImageFile);
+  log.info("=> Converting DataUrl to Image...");
+  log.info("=> Saving the Image...");
+  const HQImageFilePath = ImageTools.getFileFromDataUrl(HQImageDataUrlUncompressed, filename, path.normalize(__dirname + "../../../uploads/"));
+  log.info("=> Compressing Image...");
+  const LQImageFileUncompressed = await ImageTools.compress(path.normalize(__dirname + "../../../uploads/" + HQImageFilePath), filename, path.normalize(__dirname + "../../../uploads/"));
+  fs.rmSync(path.normalize(__dirname + "../../../uploads/" + HQImageFilePath));
+  quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
+  log.info("=> Converting Image to DataUrl...");
+  const LQImageDataUrlUncompressed = ImageTools.getDataUrlFromFile(LQImageFileUncompressed);
+  log.info("=> Compressing DataUrl...");
   const LQImageDataUrlCompressed = LZString.compressToUTF16(LQImageDataUrlUncompressed)
+  log.info("Image processed.");
   quickpaste.img = LQImageDataUrlCompressed;
 
   // Calculate File-Size
-  quickpaste.size = `${(HQImageFile.size / 1024 / 1024).toFixed(
-    1
-  )} MB`;
   return quickpaste;
 }
 
