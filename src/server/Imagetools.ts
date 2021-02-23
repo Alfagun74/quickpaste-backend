@@ -38,14 +38,13 @@ export class ImageTools {
     }
 
     static async compress(inputFilePath: string, outputFolderPath: string): Promise<string> {
-        const res = await imagemin([inputFilePath], {
+        return (await imagemin([inputFilePath], {
             destination: outputFolderPath,
             plugins: [
-                imageminPngquant(),
+                imageminPngquant({ quality: [0.5, 0.5] }),
             ],
             glob: false
-        });
-        return res[0].destinationPath;
+        }))[0].destinationPath;
     }
 
     static getFilesize(filepath: string) {
