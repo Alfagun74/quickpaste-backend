@@ -1,7 +1,7 @@
 export interface Quickpaste {
-    timestamp?: string;
+    img: string;
+    username: string;
     comment?: string;
-    img?: string;
+    timestamp?: string;
     size?: string;
-    username?: string;
 }

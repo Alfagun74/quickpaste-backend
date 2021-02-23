@@ -3,7 +3,14 @@ import express from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
 import { Quickpaste } from "../models/Quickpaste";
+import imageCompression from 'browser-image-compression';
+import LZString from "lz-string";
 
+
+const options = {
+  maxSizeMB: 8,
+  useWebWorker: true,
+};
 const log = new Logger();
 const port = 80;
 const sockets: Map<string, Socket> = new Map();
@@ -34,12 +41,12 @@ function onNewWebsocketConnection(socket: Socket) {
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
   io.emit("onlinecount", sockets.size);
 
-  socket.on("data", (quickpaste: Quickpaste) => {
+  socket.on("data", async (quickpaste: Quickpaste) => {
     log.info(`Data received from client ${socket.id}:${quickpaste.username}`, quickpaste.comment);
+    quickpaste = await processData(quickpaste);
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
     }
-
     io.emit("data", quickpaste);
     log.info(`Data broadcasted from client ${socket.id}`);
   });
@@ -55,6 +62,29 @@ function onNewWebsocketConnection(socket: Socket) {
   });
 
 
+}
+
+async function processData(quickpaste: Quickpaste): Promise<Quickpaste> {
+  // Set Timestamp
+  quickpaste.timestamp = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
+
+  // Compress Image
+  const HQImageDataUrlCompressed = quickpaste.img
+  const HQImageDataUrlUncompressed = LZString.decompressFromUTF16(HQImageDataUrlCompressed) ?? "";
+  const HQImageFile = await imageCompression.getFilefromDataUrl(
+    HQImageDataUrlUncompressed,
+    `${quickpaste.timestamp}.png`
+  );
+  const LQImageFileUncompressed = await imageCompression(HQImageFile, options);
+  const LQImageDataUrlUncompressed = await imageCompression.getDataUrlFromFile(LQImageFileUncompressed);
+  const LQImageDataUrlCompressed = LZString.compressToUTF16(LQImageDataUrlUncompressed)
+  quickpaste.img = LQImageDataUrlCompressed;
+
+  // Calculate File-Size
+  quickpaste.size = `${(LQImageFileUncompressed.size / 1024 / 1024).toFixed(
+    1
+  )} MB`;
+  return quickpaste;
 }
 
 startServer();
