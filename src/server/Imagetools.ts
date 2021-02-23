@@ -27,8 +27,8 @@ export class ImageTools {
         }
         const fileEnding = `.${mime.extension(mimeType)}`;
         const base64Data = dataUrl.split(';base64,').pop() ?? "";
-        fs.writeFileSync(outputFolderPath + filename + fileEnding, base64Data, { encoding: 'base64' });
-        return filename + fileEnding;
+        fs.writeFileSync(outputFolderPath + "F" + filename + fileEnding, base64Data, { encoding: 'base64' });
+        return "F" + filename + fileEnding;
     }
 
     static getDataUrlFromFile(filepath: string): string {
@@ -37,7 +37,7 @@ export class ImageTools {
         return `data:${filemime};base64,${data}`;
     }
 
-    static async compress(inputFilePath: string, filename: string, outputFolderPath: string): Promise<string> {
+    static async compress(inputFilePath: string, outputFolderPath: string): Promise<string> {
         const res = await imagemin([inputFilePath], {
             destination: outputFolderPath,
             plugins: [
