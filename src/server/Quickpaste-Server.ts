@@ -80,9 +80,9 @@ async function processData(quickpaste: Quickpaste): Promise<Quickpaste> {
   const HQImageDataUrlUncompressed = LZString.decompressFromUTF16(HQImageDataUrlCompressed) ?? "";
   log.info("=> Converting DataUrl to Image...");
   log.info("=> Saving the Image...");
-  const HQImageFilePath = ImageTools.getFileFromDataUrl(HQImageDataUrlUncompressed, filename, path.normalize(__dirname + "../../../uploads/"));
+  const HQImageFilePath = ImageTools.getFileFromDataUrl(HQImageDataUrlUncompressed, filename, path.normalize(__dirname + "../../../uploads/full/"));
   log.info("=> Compressing Image...");
-  const LQImageFileUncompressed = await ImageTools.compress(path.normalize(__dirname + "../../../uploads/" + HQImageFilePath), path.normalize(__dirname + "../../../uploads/"));
+  const LQImageFileUncompressed = await ImageTools.compress(path.normalize(__dirname + "../../../uploads/full/" + HQImageFilePath), path.normalize(__dirname + "../../../uploads/"));
   fs.rmSync(path.normalize(__dirname + "../../../uploads/" + HQImageFilePath));
   quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
   log.info("=> Converting Image to DataUrl...");

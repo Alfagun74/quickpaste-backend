@@ -67,5 +67,6 @@ typings/
 # IDE
 .vscode
 
-upload/*
+upload/**/*
 !upload/.gitkeep
+!upload/full/.gitkeep
