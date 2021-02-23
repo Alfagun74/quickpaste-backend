@@ -47,7 +47,7 @@ function onNewWebsocketConnection(socket: Socket) {
   io.emit("onlinecount", sockets.size);
 
   socket.on("data", async (quickpaste: Quickpaste) => {
-    log.info(`Data received from client ${socket.id}:${quickpaste.username}`, quickpaste.comment);
+    log.info(`Data received from client ${socket.id}: ${quickpaste.username}`, quickpaste.comment);
     quickpaste = await processData(quickpaste);
     if (sockets.size <= 1) {
       log.info(`Client ${socket.id} is alone.`);
