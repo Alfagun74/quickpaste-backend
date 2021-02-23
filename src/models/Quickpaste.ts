@@ -4,4 +4,5 @@ export interface Quickpaste {
     comment?: string;
     timestamp?: string;
     size?: string;
+    title?: string;
 }
