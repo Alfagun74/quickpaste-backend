@@ -27,8 +27,8 @@ export class ImageTools {
         }
         const fileEnding = `.${mime.extension(mimeType)}`;
         const base64Data = dataUrl.split(';base64,').pop() ?? "";
-        fs.writeFileSync(outputFolderPath + "F" + filename + fileEnding, base64Data, { encoding: 'base64' });
-        return "F" + filename + fileEnding;
+        fs.writeFileSync(outputFolderPath + filename + fileEnding, base64Data, { encoding: 'base64' });
+        return filename + fileEnding;
     }
 
     static getDataUrlFromFile(filepath: string): string {
