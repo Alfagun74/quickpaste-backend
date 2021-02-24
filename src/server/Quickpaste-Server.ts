@@ -91,7 +91,7 @@ async function processData(quickpaste: Quickpaste): Promise<Quickpaste> {
   const LQImageDataUrlCompressed = LZString.compressToUTF16(LQImageDataUrlUncompressed)
   log.info("Image processed.");
   quickpaste.img = LQImageDataUrlCompressed;
-  quickpaste.title = filename;
+  quickpaste.title = path.parse(LQImageFileUncompressed).base;
 
   // Calculate File-Size
   return quickpaste;
