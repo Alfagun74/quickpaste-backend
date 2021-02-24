@@ -11,9 +11,8 @@ export default (connectionString: string) => {
         }).catch(err => {
             log.error(err);
             reject(err);
-            return;
         });
-        log.info("Connected to Database: " + connectionString);
+        log.info("Connected to Database");
         resolve();
     });
 }

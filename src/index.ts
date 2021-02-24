@@ -11,7 +11,6 @@ import fs from "fs"
 import date from 'date-and-time';
 import database from "./database";
 
-console.log(process.env.NODE_ENV)
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 4);
 
 const options = {
@@ -32,7 +31,7 @@ function startServer() {
     pingTimeout: 15 * 60 * 10000,
     maxHttpBufferSize: 1e600
   });
-  if (process.env.NODE_ENV !== "test") {
+  if (process.env.NODE_ENV === "prod") {
     app.get("/last", (req: Request, res: Response) => res.send());
   }
   io.on("connection", onNewWebsocketConnection);
@@ -93,25 +92,24 @@ async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
   log.info("Image processed.");
   quickpaste.img = LQImageDataUrlCompressed;
   quickpaste.title = path.parse(LQImageFileUncompressed).base;
-  if (process.env.NODE_ENV !== "test") {
-    new model({
-      img: LQImageDataUrlCompressed,
-      username: quickpaste.username,
-      comment: quickpaste.comment,
-      timestamp: quickpaste.timestamp,
-      size: quickpaste.size,
-      title: quickpaste.title,
-    });
-  }
+  new model({
+    img: LQImageDataUrlCompressed,
+    username: quickpaste.username,
+    comment: quickpaste.comment,
+    timestamp: quickpaste.timestamp,
+    size: quickpaste.size,
+    title: quickpaste.title,
+  });
 
   // Calculate File-Size
   return quickpaste;
 }
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV === "prod") {
   database("mongodb://quickpaste:aATkbaN&7$YcmbUosn6x@srv-captain--quickpaste-server:27017/quickpaste?authSource=admin'").then(() => {
     startServer();
   })
 } else {
+
   startServer();
 }
