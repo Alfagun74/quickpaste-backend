@@ -2,7 +2,7 @@ import { Logger } from "tslog";
 import express from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
-import { Quickpaste } from "./quickpaste.model";
+import { IQuickpaste } from "./quickpaste.model";
 import LZString from "lz-string";
 import { ImageTools } from "./imagetools";
 import { customAlphabet } from "nanoid";
@@ -46,7 +46,7 @@ function onNewWebsocketConnection(socket: Socket) {
   log.info(`Client ${socket.id} connected from ${socket.handshake.address}`);
   io.emit("onlinecount", sockets.size);
 
-  socket.on("data", async (quickpaste: Quickpaste) => {
+  socket.on("data", async (quickpaste: IQuickpaste) => {
     log.info(`Data received from client ${socket.id}: ${quickpaste.username}`, quickpaste.comment);
     quickpaste = await processData(quickpaste);
     if (sockets.size <= 1) {
@@ -69,7 +69,7 @@ function onNewWebsocketConnection(socket: Socket) {
 
 }
 
-async function processData(quickpaste: Quickpaste): Promise<Quickpaste> {
+async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
   const filename = `${date.format(new Date(), "YYYY-MM-DD_HH-mm-ss")}_ID-${nanoid()}`;
   log.info("Processsing Image:");
   // Set Timestamp

@@ -1,4 +1,4 @@
-export interface Quickpaste {
+export interface IQuickpaste {
     img: string;
     username: string;
     comment?: string;
