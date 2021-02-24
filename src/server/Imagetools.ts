@@ -1,6 +1,7 @@
 import { Logger } from "tslog";
 
 import fs from "fs";
+import path from "path";
 import mime from "mime";
 import imagemin from "imagemin";
 import imageminPngquant from "imagemin-pngquant";
@@ -32,7 +33,7 @@ export class ImageTools {
     static getDataUrlFromFile(filepath: string): string {
         const filemime = mime.lookup(filepath);
         const data = fs.readFileSync(filepath, { encoding: 'base64' });
-        return `data:${filemime};base64,${data}`;
+        return `data:${filemime};name=${path.parse(basefilepath).};base64,${data}`;
     }
 
     static async compress(inputFilePath: string, outputFolderPath: string): Promise<string> {
