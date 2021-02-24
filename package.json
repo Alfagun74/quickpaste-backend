@@ -1,13 +1,13 @@
 {
   "name": "quickpaste-server",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Backend Server for Quickpaste App",
   "private": true,
   "scripts": {
     "start": "npm run build && npm run serve",
     "deploy": "npm --no-git-tag-version version patch",
     "build": "tsc",
-    "serve": "node ./bin/server/Quickpaste-Server.js"
+    "serve": "node ./bin/index.js"
   },
   "authors": [
     "Alfagun74"

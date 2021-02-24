@@ -2,9 +2,9 @@ import { Logger } from "tslog";
 import express from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
-import { Quickpaste } from "../models/Quickpaste";
+import { Quickpaste } from "./quickpaste.model";
 import LZString from "lz-string";
-import { ImageTools } from "./Imagetools";
+import { ImageTools } from "./imagetools";
 import { customAlphabet } from "nanoid";
 import path from "path"
 import fs from "fs"
