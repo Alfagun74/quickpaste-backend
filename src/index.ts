@@ -1,15 +1,17 @@
 import { Logger } from "tslog";
-import express from "express";
+import express, { Request, Response } from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
-import { IQuickpaste } from "./quickpaste.model";
+import { IQuickpaste, model } from "./quickpaste.model";
 import LZString from "lz-string";
 import { ImageTools } from "./imagetools";
 import { customAlphabet } from "nanoid";
 import path from "path"
 import fs from "fs"
 import date from 'date-and-time';
+import database from "./database";
 
+console.log(process.env.NODE_ENV)
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 4);
 
 const options = {
@@ -30,10 +32,9 @@ function startServer() {
     pingTimeout: 15 * 60 * 10000,
     maxHttpBufferSize: 1e600
   });
-  // example on how to serve a simple API
-  //app.get("/random", (req, res) => res.send(generateRandomNumber()));
-  // example on how to serve static files from a given folder
-  //app.use(express.static("public"));
+  if (process.env.NODE_ENV !== "test") {
+    app.get("/last", (req: Request, res: Response) => res.send());
+  }
   io.on("connection", onNewWebsocketConnection);
   server.listen(port, () => log.info(`Server listening for connection requests on socket localhost: ${port}`));
   server.on('error', (error: Error) => {
@@ -92,9 +93,25 @@ async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
   log.info("Image processed.");
   quickpaste.img = LQImageDataUrlCompressed;
   quickpaste.title = path.parse(LQImageFileUncompressed).base;
+  if (process.env.NODE_ENV !== "test") {
+    new model({
+      img: LQImageDataUrlCompressed,
+      username: quickpaste.username,
+      comment: quickpaste.comment,
+      timestamp: quickpaste.timestamp,
+      size: quickpaste.size,
+      title: quickpaste.title,
+    });
+  }
 
   // Calculate File-Size
   return quickpaste;
 }
 
-startServer();
+if (process.env.NODE_ENV !== "test") {
+  database("mongodb://quickpaste:aATkbaN&7$YcmbUosn6x@srv-captain--quickpaste-server/quickpaste?authSource=admin'").then(() => {
+    startServer();
+  })
+} else {
+  startServer();
+}
