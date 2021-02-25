@@ -99,7 +99,7 @@ async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
     timestamp: quickpaste.timestamp,
     size: quickpaste.size,
     title: quickpaste.title,
-  });
+  }).save().then(() => log.info("Image saved to Database."));
 
   // Calculate File-Size
   return quickpaste;
