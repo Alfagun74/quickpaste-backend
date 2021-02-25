@@ -11,13 +11,13 @@ interface IQuickpaste {
 }
 
 const QuickpasteSchema = new Schema({
-  img: { type: Schema.Types.String, required: true },
-  username: { type: Schema.Types.String, required: true },
-  comment: { type: Schema.Types.String, required: false },
-  timestamp: { type: Schema.Types.String, required: true },
-  size: { type: Schema.Types.String, required: true },
-  title: { type: Schema.Types.String, required: true },
-  channel: { type: Schema.Types.String, required: true },
+    img: { type: Schema.Types.String, required: true },
+    username: { type: Schema.Types.String, required: true },
+    comment: { type: Schema.Types.String, required: false },
+    timestamp: { type: Schema.Types.String, required: true },
+    size: { type: Schema.Types.String, required: true },
+    title: { type: Schema.Types.String, required: true },
+    channel: { type: Schema.Types.String, required: true },
 });
 QuickpasteSchema.set("timestamps", true);
 
