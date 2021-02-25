@@ -106,10 +106,9 @@ async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
 }
 
 if (process.env.NODE_ENV === "prod") {
-  database("mongodb://srv-captain--quickpaste-db/quickpaste").then(() => {
+  database("mongodb://srv-captain--quickpaste-db:27017").then(() => {
     startServer();
   })
 } else {
-
   startServer();
 }

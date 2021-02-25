@@ -12,7 +12,10 @@ export default (connectionString: string) => {
                 auth: {
                     user: "quickpaste",
                     password: "DGkKXUW5eWnLK2QeEW2h"
-                }
+                },
+                dbName: "quickpaste",
+                autoReconnect: true,
+                autoCreate: true,
             }).catch(err => {
                 log.error(err);
                 reject(err);
