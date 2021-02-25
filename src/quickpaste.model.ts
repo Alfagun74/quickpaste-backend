@@ -17,6 +17,7 @@ const QuickpasteSchema = new Schema({
     size: { type: Schema.Types.String, required: true },
     title: { type: Schema.Types.String, required: true },
 });
+QuickpasteSchema.set("timestamps", true);
 
 const QuickpasteModel = mongoose.model("Quickpaste", QuickpasteSchema);
 
