@@ -15,7 +15,7 @@ const QuickpasteSchema = new Schema({
     comment: { type: Schema.Types.String, required: true },
     timestamp: { type: Schema.Types.String, required: true },
     size: { type: Schema.Types.String, required: true },
-    title: { type: Schema.Types.ObjectId, required: true },
+    title: { type: Schema.Types.String, required: true },
 });
 
 const QuickpasteModel = mongoose.model("Poll", QuickpasteSchema);
