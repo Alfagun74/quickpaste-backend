@@ -2,7 +2,7 @@ import { Logger } from "tslog";
 import express, { Request, Response } from "express";
 import http from "http"
 import { Server, Socket } from "socket.io";
-import { IQuickpaste, model } from "./quickpaste.model";
+import { IQuickpaste, QuickpasteModel } from "./quickpaste.model";
 import LZString from "lz-string";
 import { ImageTools } from "./imagetools";
 import { customAlphabet } from "nanoid";
@@ -73,7 +73,7 @@ async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
   const filename = `${date.format(new Date(), "YYYY-MM-DD_HH-mm-ss")}_ID-${nanoid()}`;
   log.info("Processsing Image:");
   // Set Timestamp
-  quickpaste.timestamp = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
+  quickpaste.timestamp = `${new Date().toLocaleDateString("de-DE")} - ${new Date().toLocaleTimeString("de-DE")} Uhr`;
   // Compress Image
   log.info("=> Decompressing DataUrl...");
   const HQImageDataUrlCompressed = quickpaste.img;
@@ -89,17 +89,17 @@ async function processData(quickpaste: IQuickpaste): Promise<IQuickpaste> {
   const LQImageDataUrlUncompressed = ImageTools.getDataUrlFromFile(LQImageFileUncompressed);
   log.info("=> Compressing DataUrl...");
   const LQImageDataUrlCompressed = LZString.compressToUTF16(LQImageDataUrlUncompressed)
-  log.info("Image processed.");
+  log.info("Image processed");
   quickpaste.img = LQImageDataUrlCompressed;
   quickpaste.title = path.parse(LQImageFileUncompressed).base;
-  new model({
+  new QuickpasteModel({
     img: LQImageDataUrlCompressed,
     username: quickpaste.username,
     comment: quickpaste.comment,
     timestamp: quickpaste.timestamp,
     size: quickpaste.size,
     title: quickpaste.title,
-  }).save().then(() => log.info("Image saved to Database."));
+  }).save().then(() => log.info("Image saved to Database"));
 
   // Calculate File-Size
   return quickpaste;

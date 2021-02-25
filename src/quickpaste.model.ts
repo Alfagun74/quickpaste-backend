@@ -21,4 +21,4 @@ QuickpasteSchema.set("timestamps", true);
 
 const QuickpasteModel = mongoose.model("Quickpaste", QuickpasteSchema);
 
-export { IQuickpaste, QuickpasteModel as model, QuickpasteSchema as schema };
+export { IQuickpaste, QuickpasteModel, QuickpasteSchema};
