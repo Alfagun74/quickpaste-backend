@@ -18,6 +18,6 @@ const QuickpasteSchema = new Schema({
     title: { type: Schema.Types.String, required: true },
 });
 
-const QuickpasteModel = mongoose.model("Poll", QuickpasteSchema);
+const QuickpasteModel = mongoose.model("Quickpaste", QuickpasteSchema);
 
 export { IQuickpaste, QuickpasteModel as model, QuickpasteSchema as schema };
