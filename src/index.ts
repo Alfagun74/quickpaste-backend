@@ -20,10 +20,10 @@ function startServer() {
     server = http.createServer(app);
 
     server.listen(port, () => {
-        new WebsocketHandler(server);
         log.info(
             `Server listening for connection requests on socket localhost: ${port}`
         );
+        new WebsocketHandler(server);
     });
 
     server.on("error", (error: Error) => {

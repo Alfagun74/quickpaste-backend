@@ -27,7 +27,7 @@ export default class WebsocketHandler {
         this.io.of("/").adapter.on("leave-room", (room, id) => {
             console.log(`Socket ${id} has left room ${room}`);
         });
-        this.io.on("connection", this.websocketHandler);
+        this.io.sockets.on("connection", this.websocketHandler);
     }
 
     websocketHandler(socket: Socket): void {
