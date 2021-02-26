@@ -7,7 +7,7 @@ interface IQuickpaste {
     timestamp?: string;
     size?: string;
     title?: string;
-    channel: string;
+    room: string;
 }
 
 const QuickpasteSchema = new Schema({
@@ -17,7 +17,7 @@ const QuickpasteSchema = new Schema({
     timestamp: { type: Schema.Types.String, required: true },
     size: { type: Schema.Types.String, required: true },
     title: { type: Schema.Types.String, required: true },
-    channel: { type: Schema.Types.String, required: true },
+    room: { type: Schema.Types.String, required: true },
 });
 QuickpasteSchema.set("timestamps", true);
 
