@@ -12,7 +12,9 @@ const app = express();
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last/:roomcode", async (request: Request, response: Response) => {
-        const roomCode: string = request.params.roomcode;
+        const roomCode: string = request.params.roomcode
+            .replace(/\s/g, "")
+            .toLowerCase();
         const quickpastes = await QuickpasteModel.find(
             { room: roomCode },
             null,
