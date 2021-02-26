@@ -10,9 +10,9 @@ const app = fastify();
 
 if (process.env.NODE_ENV === "prod") {
     database("mongodb://srv-captain--quickpaste-db:27017");
-    app.get("/", (request, reply) => {
-        reply.status(200);
-    });
+    //app.get("/", (request, reply) => {
+    //     reply.status(200);
+    //});
 }
 
 app.listen(port, (err: Error, address: string) => {
