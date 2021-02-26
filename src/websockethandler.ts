@@ -50,6 +50,11 @@ export default class WebsocketHandler {
         });
 
         socket.on("joinroom", (roomcode: string) => {
+            socket.rooms.forEach((room) => {
+                if (room != "public") {
+                    socket.leave(room);
+                }
+            });
             socket.join(roomcode);
             this.log.info(`Client ${socket.id} connected to room ${roomcode}`);
         });
