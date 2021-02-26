@@ -61,7 +61,7 @@ export async function processData(
         timestamp: quickpaste.timestamp,
         size: quickpaste.size,
         title: quickpaste.title,
-        channel: quickpaste.room,
+        room: quickpaste.room,
     })
         .save()
         .then(() => log.info("Image saved to Database"));
