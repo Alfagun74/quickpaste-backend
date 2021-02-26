@@ -12,7 +12,6 @@ export default class WebsocketHandler {
 
     constructor(io: Server) {
         this.io = io;
-       
         this.io.of("/").adapter.on("create-room", (room) => {
             console.log(`Room ${room} was created`);
         });

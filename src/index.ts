@@ -6,12 +6,7 @@ import { Logger } from "tslog";
 
 const log = new Logger();
 const port = 80;
-
 const app = fastify();
-const io = new Server(app.server, {
-    pingTimeout: 15 * 60 * 10000,
-    maxHttpBufferSize: 1e600,
-});
 
 if (process.env.NODE_ENV === "prod") {
     database("mongodb://srv-captain--quickpaste-db:27017");
@@ -20,8 +15,13 @@ if (process.env.NODE_ENV === "prod") {
     });
 }
 
-app.listen(80, () => {
-    new WebsocketHandler(io);
+app.listen(port, () => {
+    new WebsocketHandler(
+        new Server(app.server, {
+            pingTimeout: 15 * 60 * 10000,
+            maxHttpBufferSize: 1e600,
+        })
+    );
     log.info(
         `Server listening for connection requests on socket localhost: ${port}`
     );
