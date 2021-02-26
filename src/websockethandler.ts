@@ -11,16 +11,16 @@ export default class WebsocketHandler {
     constructor(io: Server) {
         this.io = io;
         this.io.of("/").adapter.on("create-room", (room) => {
-            console.log(`Room ${room} was created`);
+            log.info(`Room ${room} was created`);
         });
         this.io.of("/").adapter.on("delete-room", (room) => {
-            console.log(`Room ${room} was deleted`);
+            log.info(`Room ${room} was deleted`);
         });
         this.io.of("/").adapter.on("join-room", (room, id) => {
-            console.log(`Socket ${id} has joined room ${room}`);
+            log.info(`Socket ${id} has joined room ${room}`);
         });
         this.io.of("/").adapter.on("leave-room", (room, id) => {
-            console.log(`Socket ${id} has left room ${room}`);
+            log.info(`Socket ${id} has left room ${room}`);
         });
         this.io.on("connection", (data) => this.websocketHandler(data));
     }
