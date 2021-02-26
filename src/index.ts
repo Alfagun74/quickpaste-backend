@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === "prod") {
     //});
 }
 
-app.listen(port, (err: Error, address: string) => {
+app.listen({ port: port, host: "0.0.0.0" }, (err: Error, address: string) => {
     if (err) throw err;
     new WebsocketHandler(
         new Server(app.server, {
