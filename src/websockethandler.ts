@@ -15,18 +15,20 @@ export default class WebsocketHandler {
             pingTimeout: 15 * 60 * 10000,
             maxHttpBufferSize: 1e600,
         });
-        this.io.on("connection", this.websocketHandler);
-        this.io.of("/").adapter.on("create-room", (room) => {
-            console.log(`Room ${room} was created`);
-        });
-        this.io.of("/").adapter.on("delete-room", (room) => {
-            console.log(`Room ${room} was deleted`);
-        });
-        this.io.of("/").adapter.on("join-room", (room, id) => {
-            console.log(`Socket ${id} has joined room ${room}`);
-        });
-        this.io.of("/").adapter.on("leave-room", (room, id) => {
-            console.log(`Socket ${id} has left room ${room}`);
+        server.on("listening", () => {
+            this.io.on("connection", this.websocketHandler);
+            this.io.of("/").adapter.on("create-room", (room) => {
+                console.log(`Room ${room} was created`);
+            });
+            this.io.of("/").adapter.on("delete-room", (room) => {
+                console.log(`Room ${room} was deleted`);
+            });
+            this.io.of("/").adapter.on("join-room", (room, id) => {
+                console.log(`Socket ${id} has joined room ${room}`);
+            });
+            this.io.of("/").adapter.on("leave-room", (room, id) => {
+                console.log(`Socket ${id} has left room ${room}`);
+            });
         });
     }
 

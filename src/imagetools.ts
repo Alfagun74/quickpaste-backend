@@ -1,5 +1,3 @@
-import { Logger } from "tslog";
-
 import fs from "fs";
 import path from "path";
 import mime from "mime";
