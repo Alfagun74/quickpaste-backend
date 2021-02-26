@@ -18,13 +18,13 @@ function startServer() {
         app.get("/last", (req: Request, res: Response) => res.send());
     }
     server = http.createServer(app);
-    new WebsocketHandler(server);
 
-    server.listen(port, () =>
+    server.listen(port, () => {
+        new WebsocketHandler(server);
         log.info(
             `Server listening for connection requests on socket localhost: ${port}`
-        )
-    );
+        );
+    });
 
     server.on("error", (error: Error) => {
         log.error("ERROR on server", error.message);
