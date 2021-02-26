@@ -15,7 +15,8 @@ if (process.env.NODE_ENV === "prod") {
     });
 }
 
-app.listen(port, () => {
+app.listen(port, (err: Error, address: string) => {
+    if (err) throw err;
     new WebsocketHandler(
         new Server(app.server, {
             pingTimeout: 15 * 60 * 10000,
@@ -23,6 +24,6 @@ app.listen(port, () => {
         })
     );
     log.info(
-        `Server listening for connection requests on socket localhost: ${port}`
+        `Server listening for connection requests on socket localhost: ${address}:${port}`
     );
 });
