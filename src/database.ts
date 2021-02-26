@@ -5,6 +5,7 @@ const log = new Logger();
 export default (connectionString: string): Promise<void | typeof mongoose> => {
     return mongoose.connect(connectionString,
         {
+            useUnifiedTopology: true,
             useNewUrlParser: true,
             authSource: "admin",
             auth: {
@@ -12,7 +13,6 @@ export default (connectionString: string): Promise<void | typeof mongoose> => {
                 password: "DGkKXUW5eWnLK2QeEW2h"
             },
             dbName: "quickpaste",
-            autoReconnect: true,
             autoCreate: true,
         }).catch(err => {
         log.error(err);
