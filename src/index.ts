@@ -24,6 +24,6 @@ app.listen(port, (err: Error, address: string) => {
         })
     );
     log.info(
-        `Server listening for connection requests on socket localhost: ${address}:${port}`
+        `Server listening for connection requests on socket localhost: ${address}`
     );
 });
