@@ -11,11 +11,11 @@ export default class WebsocketHandler {
     io: Server;
 
     constructor(server: http.Server) {
+        this.io = new Server(server, {
+            pingTimeout: 15 * 60 * 10000,
+            maxHttpBufferSize: 1e600,
+        });
         server.on("listening", () => {
-            this.io = new Server(server, {
-                pingTimeout: 15 * 60 * 10000,
-                maxHttpBufferSize: 1e600,
-            });
             this.io.of("/").adapter.on("create-room", (room) => {
                 console.log(`Room ${room} was created`);
             });
