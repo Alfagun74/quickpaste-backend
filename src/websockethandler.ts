@@ -5,8 +5,8 @@ import { Server, Socket } from "socket.io";
 import { IQuickpaste } from "./models/quickpaste.model";
 import { processData } from "./quickpasteprocessor";
 
+const log = new Logger();
 export default class WebsocketHandler {
-    log = new Logger();
     sockets: Map<string, Socket> = new Map();
     io: Server;
 
@@ -34,39 +34,39 @@ export default class WebsocketHandler {
         this.sockets.set(socket.id, socket);
         socket.join("public");
 
-        this.log.info(
+        log.info(
             `Client ${socket.id} connected from ${socket.handshake.address}`
         );
         this.io.emit("onlinecount", this.sockets.size);
 
         socket.on("quickpaste", async (quickpaste: IQuickpaste) => {
-            this.log.info(
+            log.info(
                 `Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
                 quickpaste.comment
             );
             quickpaste = await processData(quickpaste);
             this.io.to(quickpaste.room).emit("data", quickpaste);
-            this.log.info(`Data broadcasted from client ${socket.id}`);
+            log.info(`Data broadcasted from client ${socket.id}`);
         });
 
         socket.on("joinroom", (roomcode: string) => {
             socket.rooms.forEach((room) => {
-                if (room != "public") {
+                if (room !== "public" || room !== socket.id) {
                     socket.leave(room);
                 }
             });
             socket.join(roomcode);
-            this.log.info(`Client ${socket.id} connected to room ${roomcode}`);
+            log.info(`Client ${socket.id} connected to room ${roomcode}`);
         });
 
         socket.on("disconnect", () => {
             this.sockets.delete(socket.id);
             this.io.emit("onlinecount", this.sockets.size);
-            this.log.info(`Client ${socket.id} closed connection`);
+            log.info(`Client ${socket.id} closed connection`);
         });
 
         socket.on("error", (error: Error) => {
-            this.log.error(
+            log.error(
                 `ERROR on client: ${socket.id}, ${socket.handshake.address} `,
                 error.message
             );
