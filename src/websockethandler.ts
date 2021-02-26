@@ -47,6 +47,7 @@ export default class WebsocketHandler {
         socket.on("joinroom", (roomcode: string) => {
             socket.rooms.forEach((room) => {
                 if (room !== "public" || room !== socket.id) {
+                    log.warn(room);
                     socket.leave(room);
                 }
             });
