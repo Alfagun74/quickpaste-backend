@@ -59,13 +59,6 @@ export default class WebsocketHandler {
             this.log.info(`Client ${socket.id} connected to room ${roomcode}`);
         });
 
-        socket.on("leaveroom", (roomcode: string) => {
-            if (roomcode !== "public") {
-                socket.leave(roomcode);
-            }
-            this.log.info(`Client ${socket.id} connected to room ${roomcode}`);
-        });
-
         socket.on("disconnect", () => {
             this.sockets.delete(socket.id);
             this.io.emit("onlinecount", this.sockets.size);
