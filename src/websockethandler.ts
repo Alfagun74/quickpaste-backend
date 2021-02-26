@@ -37,15 +37,18 @@ export default class WebsocketHandler {
         socket.on("quickpaste", async (quickpaste: IQuickpaste) => {
             log.info(
                 `(Room: ${quickpaste.room} Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
-                quickpaste.comment,
+                quickpaste.comment
             );
             quickpaste = await processData(quickpaste);
             this.io.to(quickpaste.room).emit("quickpaste", quickpaste);
-            log.info(`(Room: ${quickpaste.room}) Quickpaste broadcasted from client ${socket.id}`);
+            log.info(
+                `(Room: ${quickpaste.room}) Quickpaste broadcasted from client ${socket.id}`
+            );
         });
 
         socket.on("joinroom", (roomcode: string) => {
-            if(!roomcode.trim()) return;
+            roomcode = roomcode.replace(/\s/g, "").toLowerCase();
+            if (!roomcode) return;
             socket.rooms.forEach((room) => {
                 if (room !== "public" && room !== socket.id) {
                     socket.leave(room);
