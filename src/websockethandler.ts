@@ -17,10 +17,10 @@ export default class WebsocketHandler {
             log.info(`Room ${room} was deleted`);
         });
         this.io.of("/").adapter.on("join-room", (room, id) => {
-            log.info(`Socket ${id} has joined room ${room}`);
+            log.info(`Client ${id} has joined room ${room}`);
         });
         this.io.of("/").adapter.on("leave-room", (room, id) => {
-            log.info(`Socket ${id} has left room ${room}`);
+            log.info(`Client ${id} has left room ${room}`);
         });
         this.io.on("connection", (data) => this.websocketHandler(data));
     }
