@@ -1,34 +1,28 @@
-import http from "http";
-
-import express, { Request, Response } from "express";
-import { Logger } from "tslog";
 import database from "./database";
 import WebsocketHandler from "./websockethandler";
+import fastify from "fastify";
+import { Server } from "socket.io";
+import { Logger } from "tslog";
 
 const log = new Logger();
 const port = 80;
 
-let app;
-let server: http.Server;
+const app = fastify();
+const io = new Server(app.server, {
+    pingTimeout: 15 * 60 * 10000,
+    maxHttpBufferSize: 1e600,
+});
 
-function startServer() {
-    app = express();
-    if (process.env.NODE_ENV === "prod") {
-        database("mongodb://srv-captain--quickpaste-db:27017");
-        app.get("/last", (req: Request, res: Response) => res.send());
-    }
-    server = http.createServer(app);
-
-    server.listen(port, () => {
-        log.info(
-            `Server listening for connection requests on socket localhost: ${port}`
-        );
-        new WebsocketHandler(server);
-    });
-
-    server.on("error", (error: Error) => {
-        log.error("ERROR on server", error.message);
+if (process.env.NODE_ENV === "prod") {
+    database("mongodb://srv-captain--quickpaste-db:27017");
+    app.get("/", (request, reply) => {
+        reply.status(200);
     });
 }
 
-startServer();
+app.listen(80, () => {
+    new WebsocketHandler(io);
+    log.info(
+        `Server listening for connection requests on socket localhost: ${port}`
+    );
+});

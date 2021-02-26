@@ -33,7 +33,7 @@ export class ImageTools {
         if (!this.isMimeTypeSupported(mimeType)) {
             throw Error("Unsupported Mime Type: " + mimeType);
         }
-        const fileEnding = `.${mime.extension(mimeType)}`;
+        const fileEnding = `.${mime.getExtension(mimeType)}`;
         const base64Data = dataUrl.split(";base64,").pop() ?? "";
         fs.writeFileSync(outputFolderPath + filename + fileEnding, base64Data, {
             encoding: "base64",
@@ -42,7 +42,7 @@ export class ImageTools {
     }
 
     static getDataUrlFromFile(filepath: string): string {
-        const filemime = mime.lookup(filepath);
+        const filemime = mime.getType(filepath);
         const data = fs.readFileSync(filepath, { encoding: "base64" });
         return `data:${filemime};name=${
             path.parse(filepath).base
