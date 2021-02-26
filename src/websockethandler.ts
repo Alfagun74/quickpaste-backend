@@ -1,5 +1,3 @@
-import http from "http";
-
 import { Logger } from "tslog";
 import { Server, Socket } from "socket.io";
 import { IQuickpaste } from "./models/quickpaste.model";
@@ -38,12 +36,12 @@ export default class WebsocketHandler {
 
         socket.on("quickpaste", async (quickpaste: IQuickpaste) => {
             log.info(
-                `Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
-                quickpaste.comment
+                `(Room: ${quickpaste.room} Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
+                quickpaste.comment,
             );
             quickpaste = await processData(quickpaste);
             this.io.to(quickpaste.room).emit("quickpaste", quickpaste);
-            log.info(`Data broadcasted from client ${socket.id}`);
+            log.info(`(Room: ${quickpaste.room}) Quickpaste broadcasted from client ${socket.id}`);
         });
 
         socket.on("joinroom", (roomcode: string) => {
@@ -53,7 +51,6 @@ export default class WebsocketHandler {
                 }
             });
             socket.join(roomcode);
-            log.info(`Client ${socket.id} connected to room ${roomcode}`);
         });
 
         socket.on("disconnect", () => {
@@ -64,7 +61,7 @@ export default class WebsocketHandler {
 
         socket.on("error", (error: Error) => {
             log.error(
-                `ERROR on client: ${socket.id}, ${socket.handshake.address} `,
+                `Client Error: ${socket.id}, ${socket.handshake.address} `,
                 error.message
             );
         });

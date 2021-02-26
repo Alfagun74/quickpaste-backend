@@ -18,11 +18,9 @@ export async function processData(
         "YYYY-MM-DD_HH-mm-ss"
     )}_ID-${nanoid()}`;
     log.info("Processsing Image:");
-    // Set Timestamp
     quickpaste.timestamp = `${new Date().toLocaleDateString(
         "de-DE"
     )} - ${new Date().toLocaleTimeString("de-DE")} Uhr`;
-    // Compress Image
     log.info("=> Decompressing DataUrl...");
     const HQImageDataUrlCompressed = quickpaste.img;
     const HQImageDataUrlUncompressed =
@@ -65,7 +63,5 @@ export async function processData(
     })
         .save()
         .then(() => log.info("Image saved to Database"));
-
-    // Calculate File-Size
     return quickpaste;
 }

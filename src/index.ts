@@ -5,17 +5,17 @@ import { Server } from "socket.io";
 import { Logger } from "tslog";
 
 const log = new Logger();
-const port = 80;
+const port = process.env.PORT ?? 80;
 const app = fastify();
 
 if (process.env.NODE_ENV === "prod") {
-    database("mongodb://srv-captain--quickpaste-db:27017");
+    database(process.env.DB_HOST ?? "");
     //app.get("/", (request, reply) => {
     //     reply.status(200);
     //});
 }
 
-app.listen({ port: port, host: "0.0.0.0" }, (err: Error, address: string) => {
+app.listen({ port: +port, host: "0.0.0.0" }, (err: Error, address: string) => {
     if (err) throw err;
     new WebsocketHandler(
         new Server(app.server, {

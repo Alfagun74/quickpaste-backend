@@ -3,18 +3,19 @@ import { Logger } from "tslog";
 const log = new Logger();
 
 export default (connectionString: string): Promise<void | typeof mongoose> => {
-    return mongoose.connect(connectionString,
-        {
+    return mongoose
+        .connect(connectionString, {
             useUnifiedTopology: true,
             useNewUrlParser: true,
             authSource: "admin",
             auth: {
-                user: "quickpaste",
-                password: "DGkKXUW5eWnLK2QeEW2h"
+                user: process.env.DB_USER ?? "",
+                password: process.env.DB_PASS ?? "",
             },
-            dbName: "quickpaste",
+            dbName: process.env.DB_NAME ?? "quickpaste",
             autoCreate: true,
-        }).catch(err => {
-        log.error(err);
-    });
+        })
+        .catch((err) => {
+            log.error(err);
+        });
 };
