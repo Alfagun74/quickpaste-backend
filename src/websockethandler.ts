@@ -42,7 +42,7 @@ export default class WebsocketHandler {
                 quickpaste.comment
             );
             quickpaste = await processData(quickpaste);
-            this.io.to(quickpaste.room).emit("data", quickpaste);
+            this.io.to(quickpaste.room).emit("quickpaste", quickpaste);
             log.info(`Data broadcasted from client ${socket.id}`);
         });
 
