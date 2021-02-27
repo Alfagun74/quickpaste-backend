@@ -19,10 +19,18 @@ if (process.env.NODE_ENV === "prod") {
             { room: roomCode },
             null,
             {
-                limit: 10,
+                limit: 5,
                 sort: { _createdAt: -1 },
             }
         );
+
+        for (const quickpaste of quickpastes) {
+            delete quickpaste._id;
+            delete quickpaste.createdAt;
+            delete quickpaste.updatedAt;
+            delete quickpaste.__v;
+        }
+
         response.json(quickpastes).status(200);
     });
 }

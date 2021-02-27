@@ -1,6 +1,10 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-interface IQuickpaste {
+interface IQuickpaste extends Document{
+    _id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    _v?: string;
     img: string;
     username: string;
     comment?: string;
@@ -21,6 +25,6 @@ const QuickpasteSchema = new Schema({
 });
 QuickpasteSchema.set("timestamps", true);
 
-const QuickpasteModel = mongoose.model("Quickpaste", QuickpasteSchema);
+const QuickpasteModel = mongoose.model<IQuickpaste>("Quickpaste", QuickpasteSchema);
 
 export { IQuickpaste, QuickpasteModel, QuickpasteSchema};
