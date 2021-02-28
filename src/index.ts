@@ -19,15 +19,13 @@ if (process.env.NODE_ENV === "prod") {
             .sort({ createdAt: "desc" })
             .limit(5)
             .exec();
-
         for (const quickpaste of quickpastes) {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
             delete quickpaste._v;
         }
-
-        response.json(quickpastes).status(200);
+        response.json(quickpastes.reverse()).status(200);
     });
 }
 
