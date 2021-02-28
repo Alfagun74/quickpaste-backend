@@ -15,20 +15,16 @@ if (process.env.NODE_ENV === "prod") {
         const roomCode: string = request.params.roomcode
             .replace(/\s/g, "")
             .toLowerCase();
-        const quickpastes = await QuickpasteModel.find(
-            { room: roomCode },
-            null,
-            {
-                limit: 5,
-                sort: { _createdAt: -1 },
-            }
-        );
+        const quickpastes = await QuickpasteModel.find({ room: roomCode })
+            .sort({ createdAt: "desc" })
+            .limit(5)
+            .exec();
 
         for (const quickpaste of quickpastes) {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
-            delete quickpaste.__v;
+            delete quickpaste._v;
         }
 
         response.json(quickpastes).status(200);
