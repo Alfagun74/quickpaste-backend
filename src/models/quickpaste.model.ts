@@ -9,7 +9,7 @@ interface IQuickpaste extends Document{
     username: string;
     comment?: string;
     timestamp?: string;
-    size?: string;
+    size?: number;
     title?: string;
     room: string;
 }
@@ -19,7 +19,7 @@ const QuickpasteSchema = new Schema({
     username: { type: Schema.Types.String, required: true },
     comment: { type: Schema.Types.String, required: false },
     timestamp: { type: Schema.Types.String, required: true },
-    size: { type: Schema.Types.String, required: true },
+    size: { type: Schema.Types.Number, required: true },
     title: { type: Schema.Types.String, required: true },
     room: { type: Schema.Types.String, required: true },
 });

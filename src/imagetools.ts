@@ -62,9 +62,8 @@ export class ImageTools {
         )[0].destinationPath;
     }
 
-    static getFilesize(filepath: string): string {
+    static getFilesize(filepath: string): number {
         const stats = fs.statSync(filepath);
-        const fileSizeInBytes = stats.size;
-        return `${(fileSizeInBytes / 1024 / 1024).toFixed(1)} MB`;
+        return Math.round((stats.size / 1024 / 1024) * 100) / 100;
     }
 }
