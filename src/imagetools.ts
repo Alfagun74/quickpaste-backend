@@ -64,6 +64,6 @@ export class ImageTools {
 
     static getFilesize(filepath: string): number {
         const stats = fs.statSync(filepath);
-        return Math.round((stats.size / 1024 / 1024) * 100) / 100;
+        return Number((stats.size / 1024 / 1024).toFixed(2));
     }
 }
