@@ -26,13 +26,12 @@ export async function processData(
     const HQImageDataUrlUncompressed =
         LZString.decompressFromUTF16(HQImageDataUrlCompressed) ?? "";
     log.info("=> Converting DataUrl to Image...");
-    log.info("=> Saving the Image...");
     const HQImageFilePath = ImageTools.getFileFromDataUrl(
         HQImageDataUrlUncompressed,
         filename,
         path.normalize(__dirname + "../../../uploads-full")
     );
-    log.info("=> Compressing Image...");
+    log.info("=> Compressing & Saving Image...");
     const LQImageFileUncompressed = await ImageTools.compress(
         path.normalize(__dirname + "../../../uploads-full" + HQImageFilePath),
         path.normalize(__dirname + "../../../uploads")
