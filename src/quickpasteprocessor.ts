@@ -8,7 +8,7 @@ import { ImageTools } from "./imagetools";
 import { IQuickpaste, QuickpasteModel } from "./models/quickpaste.model";
 
 const log = new Logger();
-const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 4);
+const nanoid = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4);
 
 export async function processData(
     quickpaste: IQuickpaste
