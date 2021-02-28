@@ -27,6 +27,10 @@ if (process.env.NODE_ENV === "prod") {
         }
         response.json(quickpastes.reverse()).status(200);
     });
+} else {
+    app.get("/last/:roomcode", async (request: Request, response: Response) => {
+        response.json([]).status(200);
+    });
 }
 
 const server = app.listen({ port: +port, host: "0.0.0.0" }, () => {
