@@ -35,6 +35,7 @@ export default class WebsocketHandler {
         this.io.emit("onlinecount", this.sockets.size);
 
         socket.on("quickpaste", async (quickpaste: IQuickpaste) => {
+            quickpaste.room = quickpaste.room.replace(/\s/g, "").toLowerCase() ?? "public";
             log.info(
                 `(Room: ${quickpaste.room} Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
                 quickpaste.comment
@@ -46,15 +47,15 @@ export default class WebsocketHandler {
             );
         });
 
-        socket.on("joinroom", (roomcode: string) => {
-            roomcode = roomcode.replace(/\s/g, "").toLowerCase();
-            if (!roomcode) return;
+        socket.on("joinroom", (room: string) => {
+            room = room.replace(/\s/g, "").toLowerCase() ?? "public";
+            if (!room) return;
             socket.rooms.forEach((room) => {
-                if (room !== "public" && room !== socket.id) {
+                if (room !== socket.id) {
                     socket.leave(room);
                 }
             });
-            socket.join(roomcode);
+            socket.join(room);
         });
 
         socket.on("disconnect", () => {
