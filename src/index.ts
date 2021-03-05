@@ -4,31 +4,34 @@ import { Server } from "socket.io";
 import { Logger } from "tslog";
 import { QuickpasteModel } from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
+import { AES, ɵn } from "crypto-ts";
 
 const log = new Logger();
 const port = process.env.PORT ?? 80;
 const app = express();
+const secret = process.env.ENCRYPTION_SECRET;
 
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
-    app.get("/last/:roomcode", async (request: Request, response: Response) => {
-        const roomCode: string = request.params.roomcode
-            .replace(/\s/g, "")
-            .toLowerCase();
-        const quickpastes = await QuickpasteModel.find({ room: roomCode })
+    app.get("/last", async (request: Request, response: Response) => {
+        const quickpastes = await QuickpasteModel.find({ room: "public" })
             .sort({ createdAt: "desc" })
             .limit(5)
             .exec();
+        if (!secret) {
+            throw Error("NO ENCRYPTION_SECRET SET.");
+        }
         for (const quickpaste of quickpastes) {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
             delete quickpaste._v;
+            quickpaste.img = ɵn.stringify(AES.decrypt(quickpaste.img, secret));
         }
         response.json(quickpastes.reverse()).status(200);
     });
 } else {
-    app.get("/last/:roomcode", async (request: Request, response: Response) => {
+    app.get("/last", async (request: Request, response: Response) => {
         response.json([]).status(200);
     });
 }

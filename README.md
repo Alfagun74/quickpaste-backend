@@ -40,7 +40,7 @@ docker run quickpaste:latest /bin/sh
 ## Built With
 -   NodeJS
 -   Typescript
--   Fastify
+-   Express
 -   Socket.io
 -   Mongoose
 -   Imagemin

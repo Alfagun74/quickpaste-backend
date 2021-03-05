@@ -6,8 +6,11 @@ import { Logger } from "tslog";
 import { customAlphabet } from "nanoid";
 import { ImageTools } from "./imagetools";
 import { IQuickpaste, QuickpasteModel } from "./models/quickpaste.model";
+import { AES } from "crypto-ts";
 
 const log = new Logger();
+const secret = process.env.ENCRYPTION_SECRET;
+
 const nanoid = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4);
 
 export async function processData(
@@ -41,6 +44,11 @@ export async function processData(
     fs.rmSync(
         path.normalize(__dirname + "../../uploads-full/" + HQImageFilePath)
     );
+    if (quickpaste.room !== "public") {
+        fs.rmSync(
+            path.normalize(__dirname + "../../uploads/" + HQImageFilePath)
+        );
+    }
     log.info("=> Calculating File Size");
     quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
     log.info("=> Converting Image to DataUrl");
@@ -55,8 +63,11 @@ export async function processData(
     quickpaste.img = LQImageDataUrlCompressed;
     quickpaste.title = path.parse(LQImageFileUncompressed).base;
     if (process.env.NODE_ENV === "prod") {
+        if (!secret) {
+            throw Error("NO ENCRYPTION_SECRET SET.");
+        }
         new QuickpasteModel({
-            img: LQImageDataUrlCompressed,
+            img: AES.encrypt(quickpaste.img, secret).toString(),
             username: quickpaste.username,
             comment: quickpaste.comment,
             timestamp: quickpaste.timestamp,
