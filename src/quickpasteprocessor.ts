@@ -56,7 +56,6 @@ export async function processData(
     const LQImageDataUrlCompressed = LZString.compressToUTF16(
         LQImageDataUrlUncompressed
     );
-    log.info("📷 Image processed");
     if (quickpaste.room !== "public") {
         log.info("=> Deleting Private File");
         if (fs.existsSync(LQImageFileUncompressed)) {
@@ -69,7 +68,8 @@ export async function processData(
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET.");
         }
-        new QuickpasteModel({
+        log.info("=> Saving Quickpaste to Database");
+        await new QuickpasteModel({
             img: AES.encrypt(quickpaste.img, secret).toString(),
             username: quickpaste.username,
             comment: quickpaste.comment,
@@ -77,9 +77,8 @@ export async function processData(
             size: quickpaste.size,
             title: quickpaste.title,
             room: quickpaste.room,
-        })
-            .save()
-            .then(() => log.info("Image saved to Database"));
+        }).save();
     }
+    log.info("📷 Image processed");
     return quickpaste;
 }
