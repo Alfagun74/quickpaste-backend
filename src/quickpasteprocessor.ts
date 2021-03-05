@@ -48,12 +48,6 @@ export async function processData(
     }
     log.info("=> Calculating File Size");
     quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
-    if (quickpaste.room !== "public") {
-        log.info("=> Deleting Private File");
-        if (fs.existsSync(LQImageFileUncompressed)) {
-            fs.rmSync(path.normalize(LQImageFileUncompressed));
-        }
-    }
     log.info("=> Converting Image to DataUrl");
     const LQImageDataUrlUncompressed = ImageTools.getDataUrlFromFile(
         LQImageFileUncompressed
@@ -63,6 +57,12 @@ export async function processData(
         LQImageDataUrlUncompressed
     );
     log.info("📷 Image processed");
+    if (quickpaste.room !== "public") {
+        log.info("=> Deleting Private File");
+        if (fs.existsSync(LQImageFileUncompressed)) {
+            fs.rmSync(path.normalize(LQImageFileUncompressed));
+        }
+    }
     quickpaste.img = LQImageDataUrlCompressed;
     quickpaste.title = path.parse(LQImageFileUncompressed).base;
     if (process.env.NODE_ENV === "prod") {
