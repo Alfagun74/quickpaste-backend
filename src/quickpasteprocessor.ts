@@ -46,13 +46,14 @@ export async function processData(
             path.normalize(__dirname + "../../uploads-full/" + HQImageFilePath)
         );
     }
+    log.info("=> Calculating File Size");
+    quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
     if (quickpaste.room !== "public") {
+        log.info("=> Deleting Private File");
         if (fs.existsSync(LQImageFileUncompressed)) {
             fs.rmSync(path.normalize(LQImageFileUncompressed));
         }
     }
-    log.info("=> Calculating File Size");
-    quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
     log.info("=> Converting Image to DataUrl");
     const LQImageDataUrlUncompressed = ImageTools.getDataUrlFromFile(
         LQImageFileUncompressed
