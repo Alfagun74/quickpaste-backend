@@ -41,13 +41,15 @@ export async function processData(
         path.normalize(__dirname + "../../uploads/")
     );
     log.info("=> Deleting Full-Size File");
-    fs.rmSync(
-        path.normalize(__dirname + "../../uploads-full/" + HQImageFilePath)
-    );
-    if (quickpaste.room !== "public") {
+    if (fs.existsSync(__dirname + "../../uploads-full/" + HQImageFilePath)) {
         fs.rmSync(
-            path.normalize(__dirname + "../../uploads/" + HQImageFilePath)
+            path.normalize(__dirname + "../../uploads-full/" + HQImageFilePath)
         );
+    }
+    if (quickpaste.room !== "public") {
+        if (fs.existsSync(LQImageFileUncompressed)) {
+            fs.rmSync(path.normalize(LQImageFileUncompressed));
+        }
     }
     log.info("=> Calculating File Size");
     quickpaste.size = ImageTools.getFilesize(LQImageFileUncompressed);
