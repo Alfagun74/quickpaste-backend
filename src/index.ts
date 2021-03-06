@@ -33,17 +33,13 @@ if (process.env.NODE_ENV === "prod") {
             if (!encryptedData) {
                 throw Error("Error loading File from DB");
             }
-            log.info("Encrypted String: " + encryptedData.substr(0, 50));
             const decryptedData = AES.decrypt(encryptedData, secret);
             if (!decryptedData) {
                 throw Error("Error decrypting file");
             }
             quickpaste.img = decryptedData.toString(ɵn);
-            log.info(
-                "DecrypdedString: " + decryptedData.toString(ɵn).substr(0, 50)
-            );
         }
-        log.info(databaseEntries);
+        console.log(databaseEntries);
         response.json(databaseEntries).status(200);
     });
 } else {
