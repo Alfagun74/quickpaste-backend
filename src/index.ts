@@ -29,7 +29,11 @@ if (process.env.NODE_ENV === "prod") {
             if (!quickpaste.title) {
                 throw Error("Quickpaste has got no title.");
             }
-            quickpaste.img = AES.decrypt(await loadLargeFile(quickpaste.title), secret).toString();
+            const encryptedData = await loadLargeFile(quickpaste.title);
+            console.log("Enc" + encryptedData);
+            const decryptedData = AES.decrypt(encryptedData, secret).toString();
+            console.log("Dec" + encryptedData);
+            quickpaste.img = decryptedData;
         }
         response.json(quickpastes.reverse()).status(200);
     });
