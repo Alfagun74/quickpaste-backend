@@ -21,7 +21,8 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        for (const quickpaste of quickpastes) {
+        // eslint-disable-next-line prefer-const
+        for (let quickpaste of quickpastes) {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
