@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === "prod") {
             .sort({ createdAt: "desc" })
             .limit(5)
             .exec();
+        databaseEntries.reverse();
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
@@ -42,8 +43,8 @@ if (process.env.NODE_ENV === "prod") {
                 "DecrypdedString: " + decryptedData.toString(ɵn).substr(0, 50)
             );
         }
-        log.info(databaseEntries.reverse());
-        response.json(databaseEntries.reverse()).status(200);
+        log.info(databaseEntries);
+        response.json(databaseEntries).status(200);
     });
 } else {
     app.get("/last", async (request: Request, response: Response) => {
