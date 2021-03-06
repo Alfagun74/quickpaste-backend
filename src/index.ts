@@ -2,11 +2,7 @@ import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
 import { Logger } from "tslog";
-import {
-    QuickpasteModel,
-    setupLargeFile,
-    loadLargeFile,
-} from "./models/quickpaste.model";
+import { QuickpasteModel, loadLargeFile } from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
 import { AES, ɵn } from "crypto-ts";
 
@@ -17,7 +13,6 @@ const secret = process.env.ENCRYPTION_SECRET;
 
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
-    setupLargeFile();
     app.get("/last", async (request: Request, response: Response) => {
         const quickpastes = await QuickpasteModel.find({ room: "public" })
             .sort({ createdAt: "desc" })

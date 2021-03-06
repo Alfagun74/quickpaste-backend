@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Logger } from "tslog";
+import { setupLargeFile } from "./models/quickpaste.model";
 const log = new Logger();
 
 export default (connectionString: string): Promise<void | typeof mongoose> => {
@@ -15,6 +16,7 @@ export default (connectionString: string): Promise<void | typeof mongoose> => {
             dbName: process.env.DB_NAME ?? "quickpaste",
             autoCreate: true,
         })
+        .then(() => setupLargeFile())
         .catch((err: Error) => {
             log.error(err);
         });
