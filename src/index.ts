@@ -21,26 +21,29 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        for (const quickpaste of databaseEntries) {
-            delete quickpaste._id;
-            delete quickpaste.createdAt;
-            delete quickpaste.updatedAt;
-            delete quickpaste._v;
-            if (!quickpaste.title) {
-                throw Error("Quickpaste has got no title.");
-            }
-            const encryptedData = await loadLargeFile(quickpaste.title);
-            if (!encryptedData) {
-                throw Error("Error loading File from DB");
-            }
-            const decryptedData = AES.decrypt(encryptedData, secret);
-            if (!decryptedData) {
-                throw Error("Error decrypting file");
-            }
-            quickpaste.img = decryptedData.toString(ɵn);
-        }
-        console.log(databaseEntries);
-        response.json(databaseEntries).status(200);
+        const quickpastes = await Promise.all(
+            databaseEntries.map(async (quickpaste) => {
+                delete quickpaste._id;
+                delete quickpaste.createdAt;
+                delete quickpaste.updatedAt;
+                delete quickpaste._v;
+                if (!quickpaste.title) {
+                    throw Error("Quickpaste has got no title.");
+                }
+                const encryptedData = await loadLargeFile(quickpaste.title);
+                if (!encryptedData) {
+                    throw Error("Error loading File from DB");
+                }
+                const decryptedData = AES.decrypt(encryptedData, secret);
+                if (!decryptedData) {
+                    throw Error("Error decrypting file");
+                }
+                quickpaste.img = decryptedData.toString(ɵn);
+                return quickpaste;
+            })
+        );
+        console.log(quickpastes);
+        response.json(quickpastes).status(200);
     });
 } else {
     app.get("/last", async (request: Request, response: Response) => {
