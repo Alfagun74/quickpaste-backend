@@ -29,9 +29,7 @@ if (process.env.NODE_ENV === "prod") {
             if (!quickpaste.title) {
                 throw Error("Quickpaste has got no title.");
             }
-            quickpaste.img = ɵn.stringify(
-                AES.decrypt(await loadLargeFile(quickpaste.title), secret)
-            );
+            quickpaste.img = AES.decrypt(await loadLargeFile(quickpaste.title), secret).toString();
         }
         response.json(quickpastes.reverse()).status(200);
     });
