@@ -1,8 +1,8 @@
+import { GridFSBucket } from "mongodb";
 import mongoose, { Schema, Document } from "mongoose";
-import Grid from "gridfs-stream";
 import streamToString from "stream-to-string";
 
-let grid: Grid.Grid;
+let EncryptedImage: GridFSBucket;
 
 interface IQuickpaste extends Document {
     _id?: string;
@@ -34,27 +34,25 @@ const QuickpasteModel = mongoose.model<IQuickpaste>(
 );
 
 function setupLargeFile(): void {
-    grid = Grid(mongoose.connection.db, mongoose.mongo);
+    EncryptedImage = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
 }
 
 function saveLargeFile(data: string, name: string): void {
-    if (!grid) {
+    if (!EncryptedImage) {
         throw "Call the Setup Method to use Large Files.";
     }
-    const writestream = grid.createWriteStream({
-        filename: name,
-        mode: "w",
-        content_type: "text/plain",
+    const writestream = EncryptedImage.openUploadStream(name, {
+        contentType: "text/plain",
     });
     writestream.write(data);
     writestream.end();
 }
 
 async function loadLargeFile(name: string): Promise<string> {
-    if (!grid) {
+    if (!EncryptedImage) {
         throw "Call the Setup Method to use Large Files.";
     }
-    return await streamToString(grid.createReadStream({ filename: name }));
+    return await streamToString(EncryptedImage.openDownloadStreamByName(name));
 }
 
 export {
