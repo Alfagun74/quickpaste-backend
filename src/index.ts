@@ -14,38 +14,37 @@ if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
         // eslint-disable-next-line prefer-const
-        let databaseEntries = await QuickpasteModel.find({ room: "Public" })
-            .sort({ createdAt: "desc" })
-            .limit(5)
-            .exec();
+        let databaseEntries = [
+            ...(await QuickpasteModel.find({ room: "Public" })
+                .sort({ createdAt: "desc" })
+                .limit(5)
+                .exec()),
+        ];
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        const quickpastes = await Promise.all(
-            databaseEntries.map(async (quickpaste) => {
-                delete quickpaste._id;
-                delete quickpaste.createdAt;
-                delete quickpaste.updatedAt;
-                delete quickpaste._v;
-                if (!quickpaste.title) {
-                    throw Error("Quickpaste has got no title.");
-                }
-                const encryptedData = await loadLargeFile(quickpaste.title);
-                if (!encryptedData) {
-                    throw Error("Error loading File from DB");
-                }
-                const decryptedData = AES.decrypt(encryptedData, secret);
-                if (!decryptedData) {
-                    throw Error("Error decrypting file");
-                }
-                const decryptedDataString = decryptedData.toString(ɵn);
-                quickpaste.img = decryptedDataString;
-                console.log(quickpaste);
-                return quickpaste;
-            })
-        );
-        quickpastes.reverse();
-        response.json(quickpastes).status(200);
+        databaseEntries.map(async (quickpaste) => {
+            delete quickpaste._id;
+            delete quickpaste.createdAt;
+            delete quickpaste.updatedAt;
+            delete quickpaste._v;
+            if (!quickpaste.title) {
+                throw Error("Quickpaste has got no title.");
+            }
+            const encryptedData = await loadLargeFile(quickpaste.title);
+            if (!encryptedData) {
+                throw Error("Error loading File from DB");
+            }
+            const decryptedData = AES.decrypt(encryptedData, secret);
+            if (!decryptedData) {
+                throw Error("Error decrypting file");
+            }
+            const decryptedDataString = decryptedData.toString(ɵn);
+            quickpaste.img = decryptedDataString;
+            console.log(quickpaste);
+        });
+        databaseEntries.reverse();
+        response.json(databaseEntries).status(200);
     });
 } else {
     app.get("/last", async (request: Request, response: Response) => {
