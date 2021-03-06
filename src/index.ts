@@ -30,7 +30,6 @@ if (process.env.NODE_ENV === "prod") {
         }
         await Promise.all(
             databaseEntries.map(async (quickpaste) => {
-                log.info(quickpaste);
                 delete quickpaste._id;
                 delete quickpaste.createdAt;
                 delete quickpaste.updatedAt;
