@@ -56,7 +56,7 @@ export class ImageTools {
         return (
             await imagemin([inputFilePath], {
                 destination: outputFolderPath,
-                plugins: [imageminPngquant()],
+                plugins: [imageminPngquant({ speed: 1, quality: [0.7, 0.9] })],
                 glob: false,
             })
         )[0].destinationPath;
