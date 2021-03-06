@@ -25,32 +25,31 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        const quickpastes = await Promise.all(
-            databaseEntries.map(async (quickpaste: IQuickpaste) => {
-                delete quickpaste._id;
-                delete quickpaste.createdAt;
-                delete quickpaste.updatedAt;
-                delete quickpaste._v;
-                if (!quickpaste.title) {
-                    throw Error("Quickpaste has got no title.");
-                }
-                const encryptedData = await loadLargeFile(quickpaste.title);
-                if (!encryptedData) {
-                    throw Error("Error loading File from DB");
-                }
-                const decryptedData = AES.decrypt(
-                    encryptedData,
-                    secret
-                );
-                if (!decryptedData) {
-                    throw Error("Error decrypting file");
-                }
-                quickpaste.img = decryptedData.toString();
-                return quickpaste;
-            })
-        );
-        log.info(quickpastes.reverse());
-        response.json(quickpastes.reverse()).status(200);
+        for (const quickpaste of databaseEntries) {
+            delete quickpaste._id;
+            delete quickpaste.createdAt;
+            delete quickpaste.updatedAt;
+            delete quickpaste._v;
+            if (!quickpaste.title) {
+                throw Error("Quickpaste has got no title.");
+            }
+            const encryptedData = await loadLargeFile(quickpaste.title);
+            if (!encryptedData) {
+                throw Error("Error loading File from DB");
+            }
+            log.info("Encrypted String: " + encryptedData.substr(0, 50));
+            const decryptedData = AES.decrypt(encryptedData, secret);
+            if (!decryptedData) {
+                throw Error("Error decrypting file");
+            }
+            log.info(
+                "DecrypdedString: " + decryptedData.toString().substr(0, 50)
+            );
+            quickpaste.img = decryptedData.toString();
+            return quickpaste;
+        }
+        log.info(databaseEntries.reverse());
+        response.json(databaseEntries.reverse()).status(200);
     });
 } else {
     app.get("/last", async (request: Request, response: Response) => {
