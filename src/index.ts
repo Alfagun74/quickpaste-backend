@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        quickpastes.map(async (quickpaste) => {
+        await quickpastes.map(async (quickpaste) => {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
