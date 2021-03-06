@@ -2,15 +2,9 @@ import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
 import { Logger } from "tslog";
-import {
-    QuickpasteModel,
-    loadLargeFile,
-    IQuickpaste,
-} from "./models/quickpaste.model";
+import { QuickpasteModel, loadLargeFile } from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
-import { AES } from "crypto-ts";
-import { Utf8 } from "crypto-ts/src/enc/Utf8";
-
+import { AES, ɵn } from "crypto-ts";
 const log = new Logger();
 const port = process.env.PORT ?? 80;
 const app = express();
@@ -42,11 +36,11 @@ if (process.env.NODE_ENV === "prod") {
             const decryptedData = AES.decrypt(encryptedData, secret);
             if (!decryptedData) {
                 throw Error("Error decrypting file");
-            } 
+            }
+            quickpaste.img = decryptedData.toString(ɵn);
             log.info(
-                "DecrypdedString: " + decryptedData.toString(Utf8).substr(0, 50)
+                "DecrypdedString: " + decryptedData.toString(ɵn).substr(0, 50)
             );
-            quickpaste.img = decryptedData.toString(Utf8);
         }
         log.info(databaseEntries.reverse());
         response.json(databaseEntries.reverse()).status(200);
