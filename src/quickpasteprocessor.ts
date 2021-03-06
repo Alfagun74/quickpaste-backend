@@ -17,7 +17,7 @@ const secret = process.env.ENCRYPTION_SECRET;
 
 const nanoid = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4);
 
-export async function processData(
+export async function processQuickpaste(
     quickpaste: IQuickpaste
 ): Promise<IQuickpaste> {
     log.info("📷 Processsing Image:");
@@ -68,12 +68,19 @@ export async function processData(
     }
     quickpaste.img = LQImageDataUrlCompressed;
     quickpaste.title = path.parse(LQImageFileUncompressed).base;
+    log.info("📷 Image processed");
+    return quickpaste;
+}
+
+export function postProcessQuickpaste(quickpaste: IQuickpaste): void {
+    if (!quickpaste.title) {
+        throw Error("Quickpaste has no title set.");
+    }
     if (process.env.NODE_ENV === "prod") {
         if (!secret) {
-            throw Error("NO ENCRYPTION_SECRET SET.");
+            throw Error("NO ENCRYPTION_SECRET SET");
         }
-        log.info("=> Saving Quickpaste to Database");
-        await new QuickpasteModel({
+        new QuickpasteModel({
             username: quickpaste.username,
             comment: quickpaste.comment,
             timestamp: quickpaste.timestamp,
@@ -86,6 +93,4 @@ export async function processData(
             quickpaste.title
         );
     }
-    log.info("📷 Image processed");
-    return quickpaste;
 }

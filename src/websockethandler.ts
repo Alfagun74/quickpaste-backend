@@ -1,7 +1,10 @@
 import { Logger } from "tslog";
 import { Server, Socket } from "socket.io";
 import { IQuickpaste } from "./models/quickpaste.model";
-import { processData } from "./quickpasteprocessor";
+import {
+    postProcessQuickpaste,
+    processQuickpaste,
+} from "./quickpasteprocessor";
 
 const log = new Logger();
 export default class WebsocketHandler {
@@ -40,8 +43,9 @@ export default class WebsocketHandler {
                 `(Room: ${quickpaste.room} Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
                 quickpaste.comment
             );
-            quickpaste = await processData(quickpaste);
+            quickpaste = await processQuickpaste(quickpaste);
             this.io.to(quickpaste.room).emit("quickpaste", quickpaste);
+            postProcessQuickpaste(quickpaste);
             log.info(
                 `(Room: ${quickpaste.room}) Quickpaste broadcasted from client ${socket.id}`
             );

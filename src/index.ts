@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "prod") {
             .limit(5)
             .exec();
         if (!secret) {
-            throw Error("NO ENCRYPTION_SECRET SET.");
+            throw Error("NO ENCRYPTION_SECRET SET");
         }
         for (const quickpaste of quickpastes) {
             delete quickpaste._id;
@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === "prod") {
             delete quickpaste.updatedAt;
             delete quickpaste._v;
             if (!quickpaste.title) {
-                throw Error("Quickpaste has got no Title.");
+                throw Error("Quickpaste has got no title.");
             }
             quickpaste.img = ɵn.stringify(
                 AES.decrypt(await loadLargeFile(quickpaste.title), secret)
