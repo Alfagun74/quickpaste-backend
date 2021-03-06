@@ -14,7 +14,6 @@ import { AES } from "crypto-ts";
 
 const log = new Logger();
 const secret = process.env.ENCRYPTION_SECRET;
-
 const nanoid = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4);
 
 export async function processQuickpaste(
