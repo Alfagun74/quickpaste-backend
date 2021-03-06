@@ -1,7 +1,7 @@
 import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
-import { Logger } from "tslog";
+import { Logger, LoggerWithoutCallSite } from "tslog";
 import {
     QuickpasteModel,
     loadLargeFile,
@@ -17,17 +17,20 @@ const secret = process.env.ENCRYPTION_SECRET;
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
-        const databaseEntries: IQuickpaste[] = (await QuickpasteModel.find({
-            room: "Public",
-        })
-            .sort({ createdAt: "desc" })
-            .limit(5)
-            .lean()) as IQuickpaste[];
+        const databaseEntries: IQuickpaste[] = (
+            await QuickpasteModel.find({
+                room: "Public",
+            })
+                .sort({ createdAt: "desc" })
+                .limit(5)
+                .lean()
+        ).reverse() as IQuickpaste[];
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
         await Promise.all(
             databaseEntries.map(async (quickpaste) => {
+                log.info(quickpaste);
                 delete quickpaste._id;
                 delete quickpaste.createdAt;
                 delete quickpaste.updatedAt;
@@ -43,12 +46,10 @@ if (process.env.NODE_ENV === "prod") {
                 if (!decryptedData) {
                     throw Error("Error decrypting file");
                 }
-                const decryptedDataString = decryptedData.toString(ɵn);
-                quickpaste.img = decryptedDataString;
+                quickpaste.img = decryptedData.toString(ɵn);
                 return quickpaste;
             })
         );
-        databaseEntries.reverse();
         response.json(databaseEntries).status(200);
     });
 } else {
