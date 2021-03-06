@@ -35,11 +35,17 @@ if (process.env.NODE_ENV === "prod") {
                     throw Error("Quickpaste has got no title.");
                 }
                 const encryptedData = await loadLargeFile(quickpaste.title);
+                if (!encryptedData) {
+                    throw Error("Error loading File from DB");
+                }
                 const decryptedData = AES.decrypt(
                     encryptedData,
                     secret
-                ).toString();
-                quickpaste.img = decryptedData;
+                );
+                if (!decryptedData) {
+                    throw Error("Error decrypting file");
+                }
+                quickpaste.img = decryptedData.toString();
                 return quickpaste;
             })
         );
