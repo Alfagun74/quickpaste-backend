@@ -2,7 +2,11 @@ import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
 import { Logger } from "tslog";
-import { QuickpasteModel, loadLargeFile } from "./models/quickpaste.model";
+import {
+    QuickpasteModel,
+    loadLargeFile,
+    IQuickpaste,
+} from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
 import { AES, ɵn } from "crypto-ts";
 const log = new Logger();
@@ -14,12 +18,16 @@ if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
         // eslint-disable-next-line prefer-const
-        let databaseEntries = [
-            ...(await QuickpasteModel.find({ room: "Public" })
-                .sort({ createdAt: "desc" })
-                .limit(5)
-                .exec()),
-        ];
+        let databaseEntries: IQuickpaste[] = JSON.parse(
+            JSON.stringify(
+                await QuickpasteModel.find({
+                    room: "Public",
+                })
+                    .sort({ createdAt: "desc" })
+                    .limit(5)
+                    .exec()
+            )
+        );
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
