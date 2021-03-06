@@ -2,7 +2,11 @@ import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
 import { Logger } from "tslog";
-import { QuickpasteModel, loadLargeFile } from "./models/quickpaste.model";
+import {
+    QuickpasteModel,
+    loadLargeFile,
+    IQuickpaste,
+} from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
 import { AES } from "crypto-ts";
 
@@ -21,7 +25,7 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        quickpastes.map(async (quickpaste) => {
+        quickpastes.map(async (quickpaste: IQuickpaste) => {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
@@ -29,10 +33,8 @@ if (process.env.NODE_ENV === "prod") {
             if (!quickpaste.title) {
                 throw Error("Quickpaste has got no title.");
             }
-            const decryptedData = AES.decrypt(
-                await loadLargeFile(quickpaste.title),
-                secret
-            ).toString();
+            const encryptedData = await loadLargeFile(quickpaste.title);
+            const decryptedData = AES.decrypt(encryptedData, secret).toString();
             quickpaste.img = decryptedData;
             log.info(quickpaste);
         });
