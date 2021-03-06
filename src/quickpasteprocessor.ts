@@ -60,7 +60,7 @@ export async function processData(
     const LQImageDataUrlCompressed = LZString.compressToUTF16(
         LQImageDataUrlUncompressed
     );
-    if (quickpaste.room !== "public") {
+    if (quickpaste.room !== "Public") {
         log.info("=> Deleting Private File");
         if (fs.existsSync(LQImageFileUncompressed)) {
             fs.rmSync(path.normalize(LQImageFileUncompressed));

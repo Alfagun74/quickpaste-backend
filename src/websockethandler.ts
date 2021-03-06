@@ -27,7 +27,7 @@ export default class WebsocketHandler {
 
     websocketHandler(socket: Socket): void {
         this.sockets.set(socket.id, socket);
-        socket.join("public");
+        socket.join("Public");
 
         log.info(
             `Client ${socket.id} connected from ${socket.handshake.address}`
@@ -35,7 +35,7 @@ export default class WebsocketHandler {
         this.io.emit("onlinecount", this.sockets.size);
 
         socket.on("quickpaste", async (quickpaste: IQuickpaste) => {
-            quickpaste.room = quickpaste.room ?? "public";
+            quickpaste.room = quickpaste.room ?? "Public";
             log.info(
                 `(Room: ${quickpaste.room} Quickpaste received from client ${socket.id}: ${quickpaste.username}`,
                 quickpaste.comment
@@ -48,7 +48,7 @@ export default class WebsocketHandler {
         });
 
         socket.on("joinroom", (room: string) => {
-            room = room ?? "public";
+            room = room ?? "Public";
             if (!room) return;
             socket.rooms.forEach((room) => {
                 if (room !== socket.id) {

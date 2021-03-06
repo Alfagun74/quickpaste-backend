@@ -14,7 +14,7 @@ const secret = process.env.ENCRYPTION_SECRET;
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
-        const quickpastes = await QuickpasteModel.find({ room: "public" })
+        const quickpastes = await QuickpasteModel.find({ room: "Public" })
             .sort({ createdAt: "desc" })
             .limit(5)
             .exec();
