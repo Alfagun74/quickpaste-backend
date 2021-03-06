@@ -1,6 +1,6 @@
 {
     "name": "quickpaste-server",
-    "version": "1.2.33",
+    "version": "1.2.34",
     "description": "Backend Server for Quickpaste App",
     "private": true,
     "scripts": {

@@ -31,26 +31,29 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        databaseEntries.map(async (quickpaste) => {
-            delete quickpaste._id;
-            delete quickpaste.createdAt;
-            delete quickpaste.updatedAt;
-            delete quickpaste._v;
-            if (!quickpaste.title) {
-                throw Error("Quickpaste has got no title.");
-            }
-            const encryptedData = await loadLargeFile(quickpaste.title);
-            if (!encryptedData) {
-                throw Error("Error loading File from DB");
-            }
-            const decryptedData = AES.decrypt(encryptedData, secret);
-            if (!decryptedData) {
-                throw Error("Error decrypting file");
-            }
-            const decryptedDataString = decryptedData.toString(ɵn);
-            quickpaste.img = decryptedDataString;
-            console.log(quickpaste);
-        });
+        await Promise.all(
+            databaseEntries.map(async (quickpaste) => {
+                delete quickpaste._id;
+                delete quickpaste.createdAt;
+                delete quickpaste.updatedAt;
+                delete quickpaste._v;
+                if (!quickpaste.title) {
+                    throw Error("Quickpaste has got no title.");
+                }
+                const encryptedData = await loadLargeFile(quickpaste.title);
+                if (!encryptedData) {
+                    throw Error("Error loading File from DB");
+                }
+                const decryptedData = AES.decrypt(encryptedData, secret);
+                if (!decryptedData) {
+                    throw Error("Error decrypting file");
+                }
+                const decryptedDataString = decryptedData.toString(ɵn);
+                quickpaste.img = decryptedDataString;
+                console.log(quickpaste);
+                return quickpaste;
+            })
+        );
         databaseEntries.reverse();
         response.json(databaseEntries).status(200);
     });
