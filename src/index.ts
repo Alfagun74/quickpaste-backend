@@ -17,17 +17,15 @@ const secret = process.env.ENCRYPTION_SECRET;
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
-        // eslint-disable-next-line prefer-const
-        let databaseEntries: IQuickpaste[] = JSON.parse(
-            JSON.stringify(
-                await QuickpasteModel.find({
-                    room: "Public",
-                })
-                    .sort({ createdAt: "desc" })
-                    .limit(5)
-                    .exec()
-            )
-        );
+        const databaseEntries: IQuickpaste[] = await QuickpasteModel.find({
+            room: "Public",
+        })
+            .sort({ createdAt: "desc" })
+            .limit(5)
+            .lean()
+            .then((data) => {
+                return data as IQuickpaste[];
+            });
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
@@ -50,7 +48,6 @@ if (process.env.NODE_ENV === "prod") {
                 }
                 const decryptedDataString = decryptedData.toString(ɵn);
                 quickpaste.img = decryptedDataString;
-                console.log(quickpaste);
                 return quickpaste;
             })
         );
