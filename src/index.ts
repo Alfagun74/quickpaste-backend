@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === "prod") {
                 throw Error("Error decrypting file");
             } 
             log.info(
-                "DecrypdedString: " + decryptedData.toString().substr(0, 50)
+                "DecrypdedString: " + decryptedData.toString(Utf8).substr(0, 50)
             );
             quickpaste.img = decryptedData.toString(Utf8);
         }
