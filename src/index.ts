@@ -9,6 +9,7 @@ import {
 } from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
 import { AES } from "crypto-ts";
+import { Utf8 } from "crypto-ts/src/enc/Utf8";
 
 const log = new Logger();
 const port = process.env.PORT ?? 80;
@@ -41,11 +42,11 @@ if (process.env.NODE_ENV === "prod") {
             const decryptedData = AES.decrypt(encryptedData, secret);
             if (!decryptedData) {
                 throw Error("Error decrypting file");
-            }
+            } 
             log.info(
                 "DecrypdedString: " + decryptedData.toString().substr(0, 50)
             );
-            quickpaste.img = decryptedData.toString();
+            quickpaste.img = decryptedData.toString(Utf8);
         }
         log.info(databaseEntries.reverse());
         response.json(databaseEntries.reverse()).status(200);
