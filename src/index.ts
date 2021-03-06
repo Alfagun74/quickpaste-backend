@@ -40,6 +40,7 @@ if (process.env.NODE_ENV === "prod") {
                     secret
                 ).toString();
                 quickpaste.img = decryptedData;
+                return quickpaste;
             })
         );
         log.info(quickpastes.reverse());
