@@ -37,8 +37,8 @@ if (process.env.NODE_ENV === "prod") {
             if (!decryptedData) {
                 throw Error("Error decrypting file");
             }
-            console.log(decryptedData.toString(ɵn));
-            quickpaste.img = decryptedData.toString(ɵn);
+            const decryptedDataString = decryptedData.toString(ɵn);
+            quickpaste.img = decryptedDataString;
             console.log(quickpaste);
         }
         console.log(quickpastes);
