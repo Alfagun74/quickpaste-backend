@@ -18,26 +18,30 @@ const secret = process.env.ENCRYPTION_SECRET;
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
-        const quickpastes = await QuickpasteModel.find({ room: "Public" })
+        const databaseEntries = await QuickpasteModel.find({ room: "Public" })
             .sort({ createdAt: "desc" })
             .limit(5)
             .exec();
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        quickpastes.map(async (quickpaste: IQuickpaste) => {
-            delete quickpaste._id;
-            delete quickpaste.createdAt;
-            delete quickpaste.updatedAt;
-            delete quickpaste._v;
-            if (!quickpaste.title) {
-                throw Error("Quickpaste has got no title.");
+        const quickpastes = databaseEntries.map(
+            async (quickpaste: IQuickpaste) => {
+                delete quickpaste._id;
+                delete quickpaste.createdAt;
+                delete quickpaste.updatedAt;
+                delete quickpaste._v;
+                if (!quickpaste.title) {
+                    throw Error("Quickpaste has got no title.");
+                }
+                const encryptedData = await loadLargeFile(quickpaste.title);
+                const decryptedData = AES.decrypt(
+                    encryptedData,
+                    secret
+                ).toString();
+                quickpaste.img = decryptedData;
             }
-            const encryptedData = await loadLargeFile(quickpaste.title);
-            const decryptedData = AES.decrypt(encryptedData, secret).toString();
-            quickpaste.img = decryptedData;
-            log.info(quickpaste);
-        });
+        );
         log.info(quickpastes.reverse());
         response.json(quickpastes.reverse()).status(200);
     });
