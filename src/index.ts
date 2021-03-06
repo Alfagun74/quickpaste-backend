@@ -25,8 +25,8 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        const quickpastes = databaseEntries.map(
-            async (quickpaste: IQuickpaste) => {
+        const quickpastes = await Promise.all(
+            databaseEntries.map(async (quickpaste: IQuickpaste) => {
                 delete quickpaste._id;
                 delete quickpaste.createdAt;
                 delete quickpaste.updatedAt;
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "prod") {
                     secret
                 ).toString();
                 quickpaste.img = decryptedData;
-            }
+            })
         );
         log.info(quickpastes.reverse());
         response.json(quickpastes.reverse()).status(200);
