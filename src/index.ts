@@ -46,7 +46,6 @@ if (process.env.NODE_ENV === "prod") {
                 "DecrypdedString: " + decryptedData.toString().substr(0, 50)
             );
             quickpaste.img = decryptedData.toString();
-            return quickpaste;
         }
         log.info(databaseEntries.reverse());
         response.json(databaseEntries.reverse()).status(200);
