@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === "prod") {
                 throw Error("Error decrypting file");
             }
             quickpaste.img = decryptedData.toString(ɵn);
+            console.log(quickpaste);
         }
         console.log(quickpastes);
         response.json(quickpastes).status(200);
