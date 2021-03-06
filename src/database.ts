@@ -15,7 +15,7 @@ export default (connectionString: string): Promise<void | typeof mongoose> => {
             dbName: process.env.DB_NAME ?? "quickpaste",
             autoCreate: true,
         })
-        .catch((err) => {
+        .catch((err: Error) => {
             log.error(err);
         });
 };

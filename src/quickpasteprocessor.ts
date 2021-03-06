@@ -5,7 +5,11 @@ import LZString from "lz-string";
 import { Logger } from "tslog";
 import { customAlphabet } from "nanoid";
 import { ImageTools } from "./imagetools";
-import { IQuickpaste, QuickpasteModel } from "./models/quickpaste.model";
+import {
+    IQuickpaste,
+    QuickpasteModel,
+    saveLargeFile,
+} from "./models/quickpaste.model";
 import { AES } from "crypto-ts";
 
 const log = new Logger();
@@ -70,7 +74,6 @@ export async function processData(
         }
         log.info("=> Saving Quickpaste to Database");
         await new QuickpasteModel({
-            img: AES.encrypt(quickpaste.img, secret).toString(),
             username: quickpaste.username,
             comment: quickpaste.comment,
             timestamp: quickpaste.timestamp,
@@ -78,6 +81,10 @@ export async function processData(
             title: quickpaste.title,
             room: quickpaste.room,
         }).save();
+        saveLargeFile(
+            AES.encrypt(quickpaste.img, secret).toString(),
+            quickpaste.title
+        );
     }
     log.info("📷 Image processed");
     return quickpaste;

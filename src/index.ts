@@ -2,7 +2,11 @@ import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
 import { Logger } from "tslog";
-import { QuickpasteModel } from "./models/quickpaste.model";
+import {
+    QuickpasteModel,
+    setupLargeFile,
+    loadLargeFile,
+} from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
 import { AES, ɵn } from "crypto-ts";
 
@@ -13,6 +17,7 @@ const secret = process.env.ENCRYPTION_SECRET;
 
 if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
+    setupLargeFile();
     app.get("/last", async (request: Request, response: Response) => {
         const quickpastes = await QuickpasteModel.find({ room: "public" })
             .sort({ createdAt: "desc" })
@@ -26,7 +31,12 @@ if (process.env.NODE_ENV === "prod") {
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
             delete quickpaste._v;
-            quickpaste.img = ɵn.stringify(AES.decrypt(quickpaste.img, secret));
+            if (!quickpaste.title) {
+                throw Error("Quickpaste has got no Title.");
+            }
+            quickpaste.img = ɵn.stringify(
+                AES.decrypt(await loadLargeFile(quickpaste.title), secret)
+            );
         }
         response.json(quickpastes.reverse()).status(200);
     });

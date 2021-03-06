@@ -1,6 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
+import Grid from "gridfs-stream";
+import streamToString from "stream-to-string";
 
-interface IQuickpaste extends Document{
+let grid: Grid.Grid;
+
+interface IQuickpaste extends Document {
     _id?: string;
     createdAt?: string;
     updatedAt?: string;
@@ -15,7 +19,6 @@ interface IQuickpaste extends Document{
 }
 
 const QuickpasteSchema = new Schema({
-    img: { type: Schema.Types.String, required: true },
     username: { type: Schema.Types.String, required: true },
     comment: { type: Schema.Types.String, required: false },
     timestamp: { type: Schema.Types.String, required: true },
@@ -25,6 +28,40 @@ const QuickpasteSchema = new Schema({
 });
 QuickpasteSchema.set("timestamps", true);
 
-const QuickpasteModel = mongoose.model<IQuickpaste>("Quickpaste", QuickpasteSchema);
+const QuickpasteModel = mongoose.model<IQuickpaste>(
+    "Quickpaste",
+    QuickpasteSchema
+);
 
-export { IQuickpaste, QuickpasteModel, QuickpasteSchema};
+function setupLargeFile(): void {
+    grid = Grid(mongoose.connection.db, mongoose.mongo);
+}
+
+function saveLargeFile(data: string, name: string): void {
+    if (!grid) {
+        throw "Call the Setup Method to use Large Files.";
+    }
+    const writestream = grid.createWriteStream({
+        filename: name,
+        mode: "w",
+        content_type: "text/plain",
+    });
+    writestream.write(data);
+    writestream.end();
+}
+
+async function loadLargeFile(name: string): Promise<string> {
+    if (!grid) {
+        throw "Call the Setup Method to use Large Files.";
+    }
+    return await streamToString(grid.createReadStream({ filename: name }));
+}
+
+export {
+    IQuickpaste,
+    QuickpasteModel,
+    QuickpasteSchema,
+    setupLargeFile,
+    saveLargeFile,
+    loadLargeFile,
+};
