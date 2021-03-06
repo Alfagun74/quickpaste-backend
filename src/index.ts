@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import { Logger } from "tslog";
 import { QuickpasteModel, loadLargeFile } from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
-import { AES, ɵn } from "crypto-ts";
+import { AES } from "crypto-ts";
 
 const log = new Logger();
 const port = process.env.PORT ?? 80;
@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        for (const quickpaste of quickpastes) {
+        quickpastes.map(async (quickpaste) => {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
@@ -29,10 +29,13 @@ if (process.env.NODE_ENV === "prod") {
             if (!quickpaste.title) {
                 throw Error("Quickpaste has got no title.");
             }
-            const decryptedData = AES.decrypt(await loadLargeFile(quickpaste.title), secret).toString();
-            console.log("Dec " + decryptedData.substring(0, 50));
+            const decryptedData = AES.decrypt(
+                await loadLargeFile(quickpaste.title),
+                secret
+            ).toString();
             quickpaste.img = decryptedData;
-        }
+        });
+
         response.json(quickpastes.reverse()).status(200);
     });
 } else {
