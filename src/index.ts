@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "prod") {
         if (!secret) {
             throw Error("NO ENCRYPTION_SECRET SET");
         }
-        await quickpastes.map(async (quickpaste) => {
+        quickpastes.map(async (quickpaste) => {
             delete quickpaste._id;
             delete quickpaste.createdAt;
             delete quickpaste.updatedAt;
@@ -34,8 +34,9 @@ if (process.env.NODE_ENV === "prod") {
                 secret
             ).toString();
             quickpaste.img = decryptedData;
+            log.info(quickpaste);
         });
-
+        log.info(quickpastes.reverse());
         response.json(quickpastes.reverse()).status(200);
     });
 } else {
