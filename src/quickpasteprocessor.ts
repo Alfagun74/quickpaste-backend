@@ -10,7 +10,7 @@ import {
     QuickpasteModel,
     saveLargeFile,
 } from "./models/quickpaste.model";
-import { AES } from "crypto-ts";
+import { Rabbit } from "crypto-js";
 
 const log = new Logger();
 const secret = process.env.ENCRYPTION_SECRET;
@@ -88,7 +88,7 @@ export function postProcessQuickpaste(quickpaste: IQuickpaste): void {
             room: quickpaste.room,
         }).save();
         saveLargeFile(
-            AES.encrypt(quickpaste.img, secret).toString(),
+            Rabbit.encrypt(quickpaste.img, secret).toString(),
             quickpaste.title
         );
     }

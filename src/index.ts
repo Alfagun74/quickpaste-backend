@@ -1,14 +1,14 @@
 import database from "./database";
 import WebsocketHandler from "./websockethandler";
 import { Server } from "socket.io";
-import { Logger, LoggerWithoutCallSite } from "tslog";
+import { Logger } from "tslog";
 import {
     QuickpasteModel,
     loadLargeFile,
     IQuickpaste,
 } from "./models/quickpaste.model";
 import express, { Request, Response } from "express";
-import { AES, ɵn } from "crypto-ts";
+import { enc, Rabbit } from "crypto-js";
 const log = new Logger();
 const port = process.env.PORT ?? 80;
 const app = express();
@@ -41,11 +41,11 @@ if (process.env.NODE_ENV === "prod") {
                 if (!encryptedData) {
                     throw Error("Error loading File from DB");
                 }
-                const decryptedData = AES.decrypt(encryptedData, secret);
+                const decryptedData = Rabbit.decrypt(encryptedData, secret);
                 if (!decryptedData) {
                     throw Error("Error decrypting file");
                 }
-                quickpaste.img = decryptedData.toString(ɵn);
+                quickpaste.img = decryptedData.toString(enc.Utf8);
                 return quickpaste;
             })
         );
