@@ -1,6 +1,6 @@
 import { Logger } from "tslog";
 import { Server, Socket } from "socket.io";
-import { IQuickpaste } from "./models/quickpaste.model";
+import { IQuickpaste, QuickpasteModel } from "./models/quickpaste.model";
 import {
     postProcessQuickpaste,
     processQuickpaste,
@@ -10,6 +10,7 @@ const log = new Logger();
 export default class WebsocketHandler {
     sockets: Map<string, Socket> = new Map();
     io: Server;
+    quickpasteCache: IQuickpaste[] = [];
 
     constructor(io: Server) {
         this.io = io;
@@ -26,6 +27,33 @@ export default class WebsocketHandler {
             log.info(`Client ${id} has left room ${room}`);
         });
         this.io.on("connection", (data) => this.websocketHandler(data));
+        this.getQuickpastes();
+    }
+
+    addQuickpaste(quickpaste: IQuickpaste): void {
+        const length = this.quickpasteCache.push(quickpaste);
+        if (length > 5) {
+            this.quickpasteCache.shift();
+        }
+    }
+
+    async getQuickpastes(): Promise<IQuickpaste[]> {
+        if (this.quickpasteCache.length > 0) {
+            return this.quickpasteCache;
+        } else if (process.env.NODE_ENV === "prod") {
+            const databaseEntries = (
+                await QuickpasteModel.find({
+                    room: "Public",
+                })
+                    .sort({ createdAt: "desc" })
+                    .limit(5)
+                    .lean()
+            ).reverse() as IQuickpaste[];
+            this.quickpasteCache = databaseEntries;
+            return databaseEntries;
+        } else {
+            return [];
+        }
     }
 
     websocketHandler(socket: Socket): void {
