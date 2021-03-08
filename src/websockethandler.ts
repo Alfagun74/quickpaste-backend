@@ -1,12 +1,18 @@
 import { Logger } from "tslog";
 import { Server, Socket } from "socket.io";
-import { IQuickpaste, QuickpasteModel } from "./models/quickpaste.model";
+import {
+    IQuickpaste,
+    loadLargeFile,
+    QuickpasteModel,
+} from "./models/quickpaste.model";
 import {
     postProcessQuickpaste,
     processQuickpaste,
 } from "./quickpasteprocessor";
+import { Rabbit, enc } from "crypto-js";
 
 const log = new Logger();
+const secret = process.env.ENCRYPTION_SECRET;
 export default class WebsocketHandler {
     sockets: Map<string, Socket> = new Map();
     io: Server;
@@ -38,9 +44,10 @@ export default class WebsocketHandler {
     }
 
     async getQuickpastes(): Promise<IQuickpaste[]> {
-        if (this.quickpasteCache.length > 0) {
-            return this.quickpasteCache;
-        } else if (process.env.NODE_ENV === "prod") {
+        if (
+            process.env.NODE_ENV === "prod" &&
+            this.quickpasteCache.length === 0
+        ) {
             const databaseEntries = (
                 await QuickpasteModel.find({
                     room: "Public",
@@ -49,11 +56,34 @@ export default class WebsocketHandler {
                     .limit(5)
                     .lean()
             ).reverse() as IQuickpaste[];
+            if (!secret) {
+                throw Error("NO ENCRYPTION_SECRET SET");
+            }
+            await Promise.all(
+                databaseEntries.map(async (quickpaste) => {
+                    delete quickpaste._id;
+                    delete quickpaste.createdAt;
+                    delete quickpaste.updatedAt;
+                    delete quickpaste._v;
+                    if (!quickpaste.title) {
+                        throw Error("Quickpaste has got no title.");
+                    }
+                    const encryptedData = await loadLargeFile(quickpaste.title);
+                    if (!encryptedData) {
+                        throw Error("Error loading File from DB");
+                    }
+                    const decryptedData = Rabbit.decrypt(encryptedData, secret);
+                    if (!decryptedData) {
+                        throw Error("Error decrypting file");
+                    }
+                    quickpaste.img = decryptedData.toString(enc.Utf8);
+                    return quickpaste;
+                })
+            );
             this.quickpasteCache = databaseEntries;
             return databaseEntries;
-        } else {
-            return [];
         }
+        return this.quickpasteCache;
     }
 
     websocketHandler(socket: Socket): void {
