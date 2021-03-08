@@ -72,6 +72,7 @@ export default class WebsocketHandler {
                 quickpaste.comment
             );
             quickpaste = await processQuickpaste(quickpaste);
+            this.addQuickpaste(quickpaste);
             this.io.to(quickpaste.room).emit("quickpaste", quickpaste);
             postProcessQuickpaste(quickpaste);
             log.info(
