@@ -135,6 +135,8 @@ export default class WebsocketHandler {
         });
 
         socket.on("error", (error: Error) => {
+            this.sockets.delete(socket.id);
+            socket.disconnect(true);
             log.error(
                 `Client Error: ${socket.id}, ${socket.handshake.address} `,
                 error.message
