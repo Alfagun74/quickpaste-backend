@@ -81,8 +81,15 @@ export default class WebsocketHandler {
                 })
             );
             this.quickpasteCache = databaseEntries;
-            return databaseEntries;
         }
+        await Promise.all(
+            this.quickpasteCache.map(async (quickpaste) => {
+                delete quickpaste._id;
+                delete quickpaste.createdAt;
+                delete quickpaste.updatedAt;
+                delete quickpaste._v;
+            })
+        );
         return this.quickpasteCache;
     }
 
