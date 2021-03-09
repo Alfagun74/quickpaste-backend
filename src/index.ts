@@ -13,7 +13,6 @@ if (process.env.NODE_ENV === "prod") {
     database(process.env.DB_HOST ?? "");
     app.get("/last", async (request: Request, response: Response) => {
         const databaseEntries = await wshandler.getQuickpastes();
-        
         response.json(databaseEntries).status(200);
     });
 } else {
