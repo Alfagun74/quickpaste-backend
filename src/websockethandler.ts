@@ -48,7 +48,7 @@ export default class WebsocketHandler {
             process.env.NODE_ENV === "prod" &&
             this.quickpasteCache.length === 0
         ) {
-            log.info("Fetching latest Quickpastes from Database");
+            log.info("No quickpastes in cache. Fetching and Decrypting the latest 5 from Database");
             const databaseEntries = (
                 await QuickpasteModel.find({
                     room: "Public",
@@ -83,6 +83,7 @@ export default class WebsocketHandler {
             );
             this.quickpasteCache = databaseEntries;
         } else {
+            log.info(`Sending ${this.quickpasteCache.length} latest cached quickpastes`);
             await Promise.all(
                 this.quickpasteCache.map(async (quickpaste) => {
                     delete quickpaste._id;
