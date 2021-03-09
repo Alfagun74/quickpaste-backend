@@ -48,6 +48,7 @@ export default class WebsocketHandler {
             process.env.NODE_ENV === "prod" &&
             this.quickpasteCache.length === 0
         ) {
+            log.info("Fetching latest Quickpastes from Database");
             const databaseEntries = (
                 await QuickpasteModel.find({
                     room: "Public",
